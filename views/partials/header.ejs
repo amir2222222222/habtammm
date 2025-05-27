@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Header</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+    }
+
+    header {
+      display: grid;
+      grid-template-rows: 100%;
+      grid-template-columns: 1fr 2fr 1.2fr;
+      align-items:end;
+      justify-items: center;
+      background: rgba(0, 66, 57, 0.874);
+      border-bottom: 3px solid #000000;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* BRAND */
+    .brand {
+      font-size: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      padding: 8px 20px;
+      border-radius: 14px;
+      color: rgb(255, 255, 255);
+
+    }
+
+    .brand span:last-child {
+      font-family: 'Poppins', sans-serif;
+      margin-left: 5px;
+      font-weight: 600;
+    }
+
+    /* NAVIGATION */
+    nav.nav {
+      position: relative;
+      bottom: 0px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    nav.nav a {
+      font-size: 17px;
+      text-decoration: none;
+      color: white;
+      padding-bottom: 4px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      gap: 5px;
+      transition: color 0.2s ease;
+    }
+
+    nav.nav a i {
+      margin-right: 5px;
+    }
+
+    nav.nav a::after {
+      content: " ";
+      position: absolute;
+      bottom:  -2px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #ff0000;
+      transition: width 0.3s ease;
+    }
+
+    nav.nav a:hover,
+    nav.nav a.active {
+      color: #ffffff;
+    }
+
+    nav.nav a:hover::after,
+    nav.nav a.active::after {
+      width: 100%;
+    }
+
+    /* RIGHT SIDE: Balance & Logout */
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 50px;
+      justify-content: center;
+      align-items: end;
+      flex-direction: row;
+      margin: 5px;
+    }
+
+    .balance-text {
+      font-weight: 600;
+      color: #148f47;
+      padding: 6px 14px;
+    
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .balance-text:hover {
+      color: #111313;
+      border-color: #00a37f;
+    }
+
+    .logout-button {
+      background-color: #940404;
+      border: none;
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: end;
+      transition: background-color 0.1s ease;
+    }
+
+    .logout-button i {
+      margin-right: 6px;
+    }
+
+    .logout-button:hover {
+      background-color: #963737;
+      box-shadow: inset 0 0 0 2px black;
+
+    }
+
+    @media (max-width: 768px) {
+      .brand {
+        font-size: 22px;
+        padding: 6px 12px;
+      }
+
+      nav.nav {
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .balance-text,
+      .logout-button {
+        font-size: 13px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <!-- Brand -->
+    <div class="brand">
+      <i class="fas fa-dice"></i><span>Arada</span><span>Bingo</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <a href="/home"><i class="fas fa-home"></i>Home</a>
+      <a href="/profile"><i class="fas fa-user"></i>Profile</a>
+      <a href="/status"><i class="fas fa-signal"></i>Status</a>
+      <a href="/games"><i class="fas fa-gamepad"></i>Games</a>
+      <a href="/setting"><i class="fas fa-cog"></i>Setting</a>
+    </nav>
+
+    <!-- Balance & Logout -->
+    <div class="actions">
+      <div class="balance-text" onclick="toggleBalance()">Balance = *****</div>
+      <form action="/logout" method="POST">
+        <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i>Log Out</button>
+      </form>
+    </div>
+  </header>
+
+  <script>
+    let balanceVisible = false;
+
+    async function toggleBalance() {
+      const balanceText = document.querySelector(".balance-text");
+
+      if (balanceVisible) {
+        balanceText.textContent = "Balance = *****";
+        balanceVisible = false;
+        return;
+      }
+
+      try {
+        const response = await fetch("/balance");
+        if (!response.ok) throw new Error("Network issue");
+        const data = await response.json();
+        balanceText.textContent = data.balance
+          ? `Balance = Birr ${data.balance.toLocaleString()}`
+          : "Balance = *****";
+      } catch (error) {
+        balanceText.textContent = "Balance = Error";
+      }
+
+      balanceVisible = true;
+    }
+
+    // Highlight active nav link
+    document.addEventListener("DOMContentLoaded", () => {
+      const path = window.location.pathname;
+      document.querySelectorAll("nav.nav a").forEach(link => {
+        if (link.getAttribute("href") === path) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

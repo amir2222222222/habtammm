@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Bingo Controls</title>
+    <style>
+        /* General Reset and Box Sizing */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+    
+        /* Prevent Scrollbars */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    
+        /* Body Styles */
+        body {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            /* Header (auto) and Content (remaining) */
+            grid-template-columns: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+        }
+    
+        /* Header Styling (Example) */
+        .header {
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    
+        /* Main Content Styles */
+        .main-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+    
+        /* Container Styles */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+        }
+    
+        /* Column Styles */
+        .column {
+            flex: 1 1 50%;
+            padding: 30px;
+            border-right: 1px solid #ddd;
+        }
+    
+        .column:last-child {
+            border-right: none;
+        }
+    
+        /* Heading Styles */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+    
+        /* Paragraph Styles */
+        p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+    
+        /* Button Styles */
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+    
+        .button:hover {
+            background-color: #2980b9;
+        }
+    
+        /* Label Styles */
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #000000;
+        }
+    
+        /* Input and Select Styles */
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    
+        /* Submit Button Styles */
+        .submit-btn {
+            background-color: #002da8;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    
+        .submit-btn:hover {
+            background-color: #010246;
+        }
+    
+        /* Checkbox Group Styles */
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+    
+        .checkbox-group input {
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+    
+        /* Pattern Layout Styles */
+        .pattern-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+    
+        /* Box Display Styles */
+        .box-display {
+            width: 200px;
+            height: 200px;
+            background-color: #004a7c93;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+    
+        .box-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+    
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+    
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+    
+            .column {
+                flex: 1 1 100%;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+    
+            .column:last-child {
+                border-bottom: none;
+            }
+    
+            .pattern-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    
+        </style>
+</head>
+
+<body>
+    <%- include('partials/header') -%>
+
+        <div class="main-content">
+            <div class="container">
+                <!-- Speed Form -->
+                <div class="column">
+                    <h2>Speed</h2>
+                    <form action="/save-speed" method="POST">
+                        <label for="speed">Speed (1-5)</label>
+                        <input type="number" id="speed" name="speed" min="1" max="5" value="<%= GameSpeed %>" required>
+                        <button type="submit" class="submit-btn">Save Speed</button>
+                    </form>
+                </div>
+
+                <!-- Voice Form -->
+                <div class="column">
+                    <h2>Voice</h2>
+                    <form id="voice-form" action="/save-voice" method="POST">
+                        <label for="voice">Voice Type</label>
+                        <select id="voice" name="voice" required>
+                            <% voiceOptions.forEach(function(voice) { %>
+                                <option value="<%= voice %>" <%=voice===selectedVoice ? 'selected' : '' %>>
+                                    <%= voice.charAt(0).toUpperCase() + voice.slice(1) %>
+                                </option>
+                                <% }); %>
+                        </select>
+                        <button type="submit" class="submit-btn">Save Voice</button>
+                    </form>
+                </div>
+
+                <!-- Patterns Form -->
+                <div class="column">
+                    <h2>Patterns</h2>
+                    <form action="/save-patterns" method="POST">
+                        <div class="pattern-layout">
+                            <div class="box-display">
+                                <img id="pattern-img" src="" alt="Pattern Preview" />
+                            </div>
+                            <div class="checkbox-group">
+                                <% Object.entries(patternLabels).forEach(([value, label])=> { %>
+                                    <label>
+                                        <input type="checkbox" name="pattern" value="<%= value %>"
+                                            <%=checkedPatterns.includes(value) ? 'checked' : '' %>
+                                        onmouseover="showImage('<%= value %>')" onmouseout="hideImage()" />
+                                            <%= label %>
+                                    </label>
+                                    <% }); %>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn">Save Patterns</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-overlay" id="loading-overlay">
+            <div>
+                <p>Downloading voices... <span id="progress-text">0/75</span></p>
+            </div>
+        </div>
+
+        <script>
+            const patternImages = {
+                h: 'https://via.placeholder.com/200?text=Horizontal',
+                v: 'https://via.placeholder.com/200?text=Vertical',
+                d: 'https://via.placeholder.com/200?text=Diagonal',
+                sc: 'https://via.placeholder.com/200?text=SC',
+                lc: 'https://via.placeholder.com/200?text=LC'
+            };
+
+            const patternImg = document.getElementById('pattern-img');
+
+            function showImage(patternKey) {
+                patternImg.src = patternImages[patternKey];
+                patternImg.style.display = 'block';
+            }
+
+            function hideImage() {
+                patternImg.style.display = 'none';
+            }
+
+            // IndexedDB open with object store creation
+            function openVoiceDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open("VoiceDB", 1);
+
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains("voices")) {
+                            db.createObjectStore("voices", { keyPath: "id" });
+                        }
+                    };
+
+                    request.onsuccess = (event) => {
+                        resolve(event.target.result);
+                    };
+
+                    request.onerror = (event) => {
+                        reject(event.target.error);
+                    };
+                });
+            }
+
+            // Check if first voice chunk exists in DB
+            function checkVoiceInDB(voice) {
+                return openVoiceDB().then(db => {
+                    return new Promise((resolve, reject) => {
+                        try {
+                            const tx = db.transaction("voices", "readonly");
+                            const store = tx.objectStore("voices");
+                            const getRequest = store.get(`${voice}_1`);
+                            getRequest.onsuccess = () => resolve(!!getRequest.result);
+                            getRequest.onerror = () => reject(getRequest.error);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                });
+            }
+
+            // Save voice file blob in IndexedDB
+            function saveVoiceToIndexedDB(voice, index, blob) {
+                return openVoiceDB().then(db => {
+                    return new Promise((resolve, reject) => {
+                        try {
+                            const tx = db.transaction("voices", "readwrite");
+                            const store = tx.objectStore("voices");
+                            store.put({ id: `${voice}_${index}`, voice, index, blob });
+                            tx.oncomplete = () => resolve();
+                            tx.onerror = () => reject(tx.error);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                });
+            }
+
+            // Download and save a single voice file
+            function downloadVoiceFile(voice, index) {
+                return fetch(`/public/mp3/${voice}/${voice}${index}.mp3`)
+                    .then(response => {
+                        if (!response.ok) {
+                            alert(`Warning: Voice file ${voice}${index}.mp3 not found for download.`);
+                            return null; // Continue downloading others
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        if (!blob) return; // skip save if no blob
+                        return saveVoiceToIndexedDB(voice, index, blob);
+                    })
+                    .catch(err => {
+                        console.error(`Error downloading voice file ${voice}${index}:`, err);
+                    });
+            }
+
+            // Download all 75 voice files with progress UI
+            function startDownloadingVoices(voice) {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                const progressText = document.getElementById('progress-text');
+                loadingOverlay.style.display = 'flex';
+
+                let downloadCount = 0;
+                const totalFiles = 75;
+
+                const downloadPromises = [];
+                for (let i = 1; i <= totalFiles; i++) {
+                    const p = downloadVoiceFile(voice, i).then(() => {
+                        downloadCount++;
+                        progressText.textContent = `${downloadCount}/${totalFiles}`;
+                    });
+                    downloadPromises.push(p);
+                }
+
+                Promise.all(downloadPromises).then(() => {
+                    loadingOverlay.style.display = 'none';
+                    alert("Download complete!");
+                    // Submit form after download finishes
+                    document.getElementById('voice-form').submit();
+                });
+            }
+
+            // Voice form submit handler
+            document.getElementById('voice-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const selectedVoice = document.getElementById('voice').value;
+
+                checkVoiceInDB(selectedVoice).then(exists => {
+                    if (exists) {
+                        // Already downloaded, submit immediately
+                        this.submit();
+                    } else {
+                        // Not downloaded, download first
+                        startDownloadingVoices(selectedVoice);
+                    }
+                }).catch(err => {
+                    console.error('Error checking IndexedDB:', err);
+                    // fallback: submit anyway
+                    this.submit();
+                });
+            });
+        </script>
+
+</body>
+
+</html>
