@@ -194,42 +194,54 @@
     </div>
   </header>
 
-  <script>
-    let balanceVisible = false;
+ <script>
+  let balanceVisible = false;
 
-    async function toggleBalance() {
-      const balanceText = document.querySelector(".balance-text");
+  async function toggleBalance() {
+    const balanceText = document.querySelector(".balance-text");
 
-      if (balanceVisible) {
-        balanceText.textContent = "Balance";
-        balanceVisible = false;
-        return;
-      }
-
-      try {
-        const response = await fetch("/balance");
-        if (!response.ok) throw new Error("Network issue");
-        const data = await response.json();
-        balanceText.textContent = data.balance
-          ? ` Birr ${data.balance.toLocaleString()}`
-          : "Balance";
-      } catch (error) {
-        balanceText.textContent = "Error";
-      }
-
-      balanceVisible = true;
+    if (balanceVisible) {
+      balanceText.textContent = "Balance";
+      balanceVisible = false;
+      return;
     }
 
-    // Highlight active nav link
-    document.addEventListener("DOMContentLoaded", () => {
-      const path = window.location.pathname;
-      document.querySelectorAll("nav.nav a").forEach(link => {
-        if (link.getAttribute("href") === path) {
-          link.classList.add("active");
-        }
-      });
+    try {
+      const response = await fetch("/balance");
+
+      if (!response.ok) {
+        console.error("Network issue:", response.status, response.statusText); // Log the error
+        balanceText.textContent = "Error";
+        return; // Exit the function
+      }
+
+      const data = await response.json();
+
+      if (data.balance === 0) {
+        balanceText.textContent = "Birr 0"; // Display "Birr 0" if balance is zero
+      } else if (data.balance) {
+        balanceText.textContent = `Birr ${data.balance.toLocaleString()}`;
+      } else {
+        balanceText.textContent = "error"; // Handle cases where balance is null or undefined
+      }
+    } catch (error) {
+      console.error("Fetch error:", error); // Log the error
+      balanceText.textContent = "Error";
+    }
+
+    balanceVisible = true;
+  }
+
+  // Highlight active nav link
+  document.addEventListener("DOMContentLoaded", () => {
+    const path = window.location.pathname;
+    document.querySelectorAll("nav.nav a").forEach(link => {
+      if (link.getAttribute("href") === path) {
+        link.classList.add("active");
+      }
     });
-  </script>
+  });
+</script>
 
 </body>
 
