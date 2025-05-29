@@ -49,7 +49,7 @@
     }
 
     .sidebar-records {
-       position: relative;
+      position: relative;
       display: grid;
       grid-template-rows: 1fr 3fr 2fr;
       grid-template-columns: 100%;
@@ -172,7 +172,7 @@
     }
 
     .bingo-labels div {
-      background: #00095d;
+      background: #0004ff;
       height: 100%;
       display: flex;
       align-items: center;
@@ -213,7 +213,7 @@
     }
 
     .bingo-cell {
-      background-color: #a5bb00;
+      background-color: #0000008d;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -278,7 +278,7 @@
 
     .bottom-display {
       display: grid;
-      grid-template-columns: 2fr 3fr 3fr;
+      grid-template-columns: 3fr 3fr;
       gap: 10px;
     }
 
@@ -301,7 +301,7 @@
       text-shadow: 1px 1px 3px black;
     }
 
-    .uncalled-numbers,
+
     .called-numbers {
       background-color: #333;
       border-radius: 10px;
@@ -316,14 +316,14 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
-    .uncallednumbers,
+
     .callednumbers {
       font-size: 5rem;
       font-weight: bold;
       color: #0ff;
     }
 
-    .uncalled-numbers .small,
+
     .called-numbers .small {
       font-size: 1rem;
       color: #ccc;
@@ -518,7 +518,7 @@
 
 
     .bingo-cell.current {
-      background-color: #0a0074;
+      background-color: #ff0059;
       color: #ffffff;
       font-weight: bold;
       animation: pulse 1s infinite;
@@ -544,63 +544,69 @@
         transform: scale(1);
       }
     }
+
     .record-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    background: #002d75;
-    text-align: center;
-    width: 100%;
-    height: auto; /* Change this to auto for flexibility */
-    word-break: break-word;
-    border-radius: 5px;
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: #002d75;
+      text-align: center;
+      width: 100%;
+      height: auto;
+      /* Change this to auto for flexibility */
+      word-break: break-word;
+      border-radius: 5px;
+    }
 
-  /* Info Display Container */
-  .info-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #d3cdcd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+    /* Info Display Container */
+    .info-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #d3cdcd;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
 
-  /* Winner Heading */
-  .info-display .winner {
-    font-size: 30px;
-    color: #28a745; /* Green for winner */
-    font-weight: bold;
-  }
-
-  /* Betbirr Heading */
-  .info-display .betbirr {
-    font-size: 20px;
-    color: #007bff; /* Blue for bet amount */
-    font-weight: 600;
-  }
-
-  /* Money Sign Styling */
-  .info-display .winner::after,
-  .info-display .betbirr::after {
-    content: "ETB "; /* Ethiopian Birr */
-    margin-left: 5px;
-    color: #6c757d; /* Gray color */
-  }
-
-  /* Responsive Design */
-  @media (max-width: 576px) {
+    /* Winner Heading */
     .info-display .winner {
-      font-size: 20px;
+      font-size: 30px;
+      color: #28a745;
+      /* Green for winner */
+      font-weight: bold;
     }
 
+    /* Betbirr Heading */
     .info-display .betbirr {
-      font-size: 16px;
+      font-size: 20px;
+      color: #007bff;
+      /* Blue for bet amount */
+      font-weight: 600;
     }
-  }
+
+    /* Money Sign Styling */
+    .info-display .winner::after,
+    .info-display .betbirr::after {
+      content: "ETB ";
+      /* Ethiopian Birr */
+      margin-left: 5px;
+      color: #6c757d;
+      /* Gray color */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+      .info-display .winner {
+        font-size: 20px;
+      }
+
+      .info-display .betbirr {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -643,8 +649,8 @@
       </div>
       <div class="controls">
         <div class="info-display">
-          <h1 class="winner">winner: <%= betbirr %> birr</h1>
-          <h1 class="betbirr">Betbirr: <%= winningamount %> birr</h1>
+          <h1 class="winner">winner: <%= winningamount %> birr</h1>
+          <h1 class="betbirr">Betbirr: <%= betbirr %> birr</h1>
         </div>
         <div class="button-group">
           <button id="shuffle">SHUFFLE</button>
@@ -656,17 +662,13 @@
     </div>
     <div class="bottom-display">
       <div class="logo-area"></div>
-      <div class="uncalled-numbers">
-        <span class="uncallednumbers">--</span>
-        <div class="small">Uncalled Numbers</div>
-      </div>
       <div class="called-numbers">
         <span class="callednumbers">--</span>
         <div class="small">Called Numbers</div> <!-- ✅ FIXED -->
       </div>
 
     </div>
-    <script src="socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
       // === Save server data to localStorage ===
@@ -741,7 +743,7 @@
 
       // === Download and save a single voice file ===
       async function downloadVoiceFile(voice, index) {
-        const url = `/public/mp3/${voice}/${voice}${index}.mp3`;
+        const url = `/mp3/${voice}/${voice}${index}.mp3`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`File not found: ${voice}${index}.mp3`);
         const blob = await response.blob();
@@ -783,7 +785,6 @@
           console.error('Error checking or downloading voices:', e);
         }
       });
-
 
 
       const record_grid = document.querySelector(".record-grid");
@@ -859,6 +860,9 @@
         });
       }
 
+
+
+
       let gameStarted = false;
       let hasStarted = false;
       let isPaused = false;
@@ -905,9 +909,7 @@
 
       function updateCalledUncalledCount() {
         const called = document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current").length;
-        const uncalled = 75 - called;
         calledDisplay.textContent = called;
-        uncalledDisplay.textContent = uncalled;
       }
 
       function setGameState(started, paused, active) {
@@ -932,73 +934,57 @@
       }
 
       // === LOGGING NUMBERS ===
-        const calledNumbers = new Set(); // ⬅️ Global or higher-scope variable to track played numbers
+      const calledNumbers = new Set(); // Track played numbers globally
 
-          async function startLoggingNumbers(fromIndex = 0) {
-            index = fromIndex;
-            clearInterval(intervalId);
-            isPaused = false;
-            setGameState(true, false, true);
+      async function startLoggingNumbers(fromIndex = 0) {
+        index = fromIndex;
+        clearInterval(intervalId);
+        isPaused = false;
+        setGameState(true, false, true);
 
-            let db;
-            try {
-              db = await openDB();
-            } catch (err) {
-              console.error("IndexedDB open failed:", err);
-              return;
-            }
+        let db;
+        try {
+          db = await openDB();
+        } catch (err) {
+          console.error("IndexedDB open failed:", err);
+          return;
+        }
 
-            // Skip any already-called numbers
-            while (index < numbers.length && calledNumbers.has(numbers[index])) {
-              index++;
-            }
+        // Skip already-called numbers
+        while (index < numbers.length && calledNumbers.has(numbers[index])) {
+          index++;
+        }
 
-            if (index < numbers.length) {
-              const number = numbers[index];
-              console.log(`Playing first number (3000ms delay): ${number}`);
-              highlightNumber(number);
-
-              try {
-                const blob = await getVoiceBlob(db, number);
-                playVoiceFromBlob(blob, number);
-              } catch (err) {
-                console.error("Voice error:", err);
-              }
-
-              calledNumbers.add(number); // ✅ Mark as played
-              index++;
-            }
-
-            // Fixed delay (3000ms) before starting interval with dynamic speed
-            setTimeout(() => {
-              intervalId = setInterval(async () => {
-                while (index < numbers.length && calledNumbers.has(numbers[index])) {
-                  index++;
-                }
-
-                if (isPaused || index >= numbers.length) {
-                  clearInterval(intervalId);
-                  setGameState(true, true, false);
-                  gameStarted = false;
-                  return;
-                }
-
-                const number = numbers[index];
-                console.log(`Playing: ${number}`);
-                highlightNumber(number);
-
-                try {
-                  const blob = await getVoiceBlob(db, number);
-                  playVoiceFromBlob(blob, number);
-                } catch (err) {
-                  console.error("Voice error:", err);
-                }
-
-                calledNumbers.add(number); // ✅ Mark as played
-                index++;
-              }, gameSpeed * 1000); // ⏱ Uses dynamic speed for subsequent calls
-            }, 3000); // ⏱ Fixed 3-second delay for first call
+        // Start calling numbers at game speed immediately
+        intervalId = setInterval(async () => {
+          // Skip already-called numbers during interval
+          while (index < numbers.length && calledNumbers.has(numbers[index])) {
+            index++;
           }
+
+          // End condition
+          if (isPaused || index >= numbers.length) {
+            clearInterval(intervalId);
+            setGameState(true, true, false);
+            gameStarted = false;
+            return;
+          }
+
+          const number = numbers[index];
+          console.log(`Playing: ${number}`);
+          highlightNumber(number);
+
+          try {
+            const blob = await getVoiceBlob(db, number);
+            playVoiceFromBlob(blob, number);
+          } catch (err) {
+            console.error("Voice error:", err);
+          }
+
+          calledNumbers.add(number); // Mark as called
+          index++;
+        }, gameSpeed * 1000); // ⏱ Uses dynamic speed for all calls, including the first
+      }
 
 
       initRecordGrid();
@@ -1027,7 +1013,7 @@
           // Temporary success handler
           const handleNumbers = (data) => {
             if (!Array.isArray(data)) return;
-
+            playSound.play().catch(() => { });
             socket.off("displayNumbers", handleNumbers);
             socket.off("errorMsg", handleError);
 
@@ -1041,10 +1027,10 @@
 
             cartSubmit.disabled = false;
             lockBtn.disabled = false;
- 
+
             lockBtn.classList.remove("disabled-anim");
 
-            new Audio("/play.mp3").play().catch(() => { });
+
             cartInput.value = "";
             initRecordGrid();
             record_title.textContent = " የ ተጫዋች ካርተላ መፈተሻ እና ዉጤት ማሳያ ቦታ ";
@@ -1071,65 +1057,66 @@
 
       pauseBtn.addEventListener("click", () => {
         if (hasStarted && !isPaused) {
-          new Audio("/puase.mp3").play().catch(() => { });
+          pauseSound.play().catch(() => { });
           setGameState(true, true, false);
         }
       });
 
       resetBtn.addEventListener("click", () => {
-        localStorage.removeItem("lockedCartelas");
-          window.location.href = "/home";
-       
+        window.location.href = "/home";
+
       });
 
       shuffleBtn.addEventListener("click", () => {
         if (!shuffleUsed && !hasStarted) {
+          shuffleSound.play();
           shuffleUsed = true;
           document.body.classList.add("shake");
           setTimeout(() => document.body.classList.remove("shake"), 1000);
-          new Audio("/shuffle.mp3").play();
           updateButtons();
         }
       });
-        let lockedCartelas = [];
 
-        lockBtn.addEventListener("click", () => {
-          if (gameStarted) {
-            record_title.textContent = "❌ ጨዋታው ገና አልጀመረም !";
-            return;
-          }
 
-          const value = cartInput.value.trim();
-          const cartNumber = parseInt(value, 10);
-          if (isNaN(cartNumber)) {
-            record_title.textContent = "❌ ለመፍታትም ሆነ ለመቆለፍ ያልተሳሳተ የካርተላ ቁጥር ያስገቡ";
-            return;
-          }
+      let lockedCartelas = [];
 
-          const isLocked = lockedCartelas.includes(cartNumber);
+      lockBtn.addEventListener("click", () => {
+        if (gameStarted) {
+          record_title.textContent = "❌ ጨዋታው ገና አልጀመረም !";
+          return;
+        }
+
+        const value = cartInput.value.trim();
+        const cartNumber = parseInt(value, 10);
+        if (isNaN(cartNumber)) {
+          record_title.textContent = "❌ ለመፍታትም ሆነ ለመቆለፍ ያልተሳሳተ የካርተላ ቁጥር ያስገቡ";
+          return;
+        }
+
+        const isLocked = lockedCartelas.includes(cartNumber);
+        lockBtn.textContent = "Lock";
+        if (isLocked) {
+          // 🔓 Unlock
+          lockedCartelas = lockedCartelas.filter(n => n !== cartNumber);
+          record_title.textContent = `🔓 ካርቴላ ቁጥር ${cartNumber} ተፈቅዷል`;
+          initRecordGrid();
+          evaluateWin(cells, lineChecker, cartNumber);
           lockBtn.textContent = "Lock";
-          if (isLocked) {
-            // 🔓 Unlock
-            lockedCartelas = lockedCartelas.filter(n => n !== cartNumber);
-            record_title.textContent = `🔓 ካርቴላ ቁጥር ${cartNumber} ተፈቅዷል`;
-            initRecordGrid();
-            evaluateWin(cells, lineChecker, cartNumber);
-            lockBtn.textContent = "Lock";
-          } else {
-            // 🔒 Lock
-            lockedCartelas.push(cartNumber);
-            record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል`;
-            initRecordGrid();
-            const allCells = record_grid.querySelectorAll(".record-cell");
-            allCells.forEach(cell => {
-              cell.textContent = "O";
-              cell.classList.remove("checked", "joker");
-            });
-            lockBtn.textContent = "UnLock";
-          }
+        } else {
+          // 🔒 Lock
+          lockedCartelas.push(cartNumber);
+          record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል`;
+          initRecordGrid();
+          const allCells = record_grid.querySelectorAll(".record-cell");
+          allCells.forEach(cell => {
+            cell.textContent = "O";
+            cell.classList.remove("checked", "joker");
+          });
+          lockBtn.textContent = "UnLock";
+        }
 
-          lockBtn.classList.remove("disabled-anim");
-        });
+        lockBtn.classList.remove("disabled-anim");
+      });
 
 
 
@@ -1172,76 +1159,76 @@
       });
 
 
-       
+
       const Patterns = localStorage.getItem('Patterns') || '["h", "v", "d", "sc", "lc"]';
 
       function handleCartSubmit() {
-          initRecordGrid();
+        initRecordGrid();
 
-          if (!gameStarted && numbers.length === 0) {
-            record_title.textContent = "❌ ጨዋታው ገና አልተጀመረም !";
-            return;
-          }
+        if (!gameStarted && numbers.length === 0) {
+          record_title.textContent = "❌ ጨዋታው ገና አልተጀመረም !";
+          return;
+        }
 
-          const cartNumber = parseInt(cartInput.value.trim(), 10);
-          if (isNaN(cartNumber) || cartNumber < 1 || cartNumber > 150) {
-            record_title.textContent = "❌ ከካርቴላ ቁጥር ከ (1-150) ዉጪ ሲስተሞ ላይ አልተመዘገበምአልተመዘገበም !";
-            return;
-          }
+        const cartNumber = parseInt(cartInput.value.trim(), 10);
+        if (isNaN(cartNumber) || cartNumber < 1 || cartNumber > 150) {
+          record_title.textContent = "❌ ከካርቴላ ቁጥር ከ (1-150) ዉጪ ሲስተሞ ላይ አልተመዘገበምአልተመዘገበም !";
+          return;
+        }
 
-          const cartelas = JSON.parse(localStorage.getItem("Cartelas") || "[]");
-          const cartela = cartelas.find(c => c.cart_number === cartNumber);
+        const cartelas = JSON.parse(localStorage.getItem("Cartelas") || "[]");
+        const cartela = cartelas.find(c => c.cart_number === cartNumber);
 
-          if (!cartela || !cartela.grid) {
-            record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} አልተመዘገበም።`;
-            return;
-          }
+        if (!cartela || !cartela.grid) {
+          record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} አልተመዘገበም።`;
+          return;
+        }
 
-          // Use the global lockedCartelas array here
-          const isLocked = lockedCartelas.includes(cartNumber);
-          window.lastChakeTime = new Date().toISOString();
+        // Use the global lockedCartelas array here
+        const isLocked = lockedCartelas.includes(cartNumber);
+        window.lastChakeTime = new Date().toISOString();
 
-          if (isLocked) {
-            record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል.`;
-            lockBtn.textContent = "Unlock";
-            lockBtn.disabled = false;
-            lockBtn.classList.remove("disabled-anim");
-            return;
-          }
-
-          // Populate record grid with cartela values
-          const grid = cartela.grid;
-          const highlightedCells = Array.from(document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current"))
-            .map(cell => cell.textContent.trim())
-            .filter(text => text !== "");
-
-          record_grid.innerHTML = "";
-          grid.flat().forEach(value => {
-            const cell = document.createElement("div");
-            cell.className = "record-cell";
-            cell.textContent = value;
-            if (value === "free") {
-              cell.classList.add("joker");
-            }
-            if (value !== "free" && highlightedCells.includes(String(value))) {
-              cell.classList.add("checked");
-            }
-            record_grid.appendChild(cell);
-          });
-
-          if (!checkedCartNumbers.includes(cartNumber)) {
-            checkedCartNumbers.push(cartNumber);
-            localStorage.setItem("checkedCartNumbers", JSON.stringify(checkedCartNumbers));
-          }
-
-          const lineChecker = parseInt(localStorage.getItem("LineChacker") || "1", 10);
-          const cellNodes = Array.from(record_grid.children);
-          evaluateWin(cellNodes, lineChecker, cartNumber);
-
-          lockBtn.textContent = "Lock";
+        if (isLocked) {
+          record_title.textContent = `🔒 ካርቴላ ቁጥር ${cartNumber} ተቆልፏል.`;
+          lockBtn.textContent = "Unlock";
           lockBtn.disabled = false;
           lockBtn.classList.remove("disabled-anim");
+          return;
         }
+
+        // Populate record grid with cartela values
+        const grid = cartela.grid;
+        const highlightedCells = Array.from(document.querySelectorAll(".bingo-cell.highlight, .bingo-cell.current"))
+          .map(cell => cell.textContent.trim())
+          .filter(text => text !== "");
+
+        record_grid.innerHTML = "";
+        grid.flat().forEach(value => {
+          const cell = document.createElement("div");
+          cell.className = "record-cell";
+          cell.textContent = value;
+          if (value === "free") {
+            cell.classList.add("joker");
+          }
+          if (value !== "free" && highlightedCells.includes(String(value))) {
+            cell.classList.add("checked");
+          }
+          record_grid.appendChild(cell);
+        });
+
+        if (!checkedCartNumbers.includes(cartNumber)) {
+          checkedCartNumbers.push(cartNumber);
+          localStorage.setItem("checkedCartNumbers", JSON.stringify(checkedCartNumbers));
+        }
+
+        const lineChecker = parseInt(localStorage.getItem("LineChacker") || "1", 10);
+        const cellNodes = Array.from(record_grid.children);
+        evaluateWin(cellNodes, lineChecker, cartNumber);
+
+        lockBtn.textContent = "Lock";
+        lockBtn.disabled = false;
+        lockBtn.classList.remove("disabled-anim");
+      }
 
 
       cartSubmit.addEventListener("click", handleCartSubmit);
@@ -1254,114 +1241,140 @@
       let checkedCartNumbers = JSON.parse(localStorage.getItem("checkedCartNumbers") || "[]");
 
       function evaluateWin(cells, lineChecker, cartNumber) {
-          const size = 5;
-          let winCount = 0;
-          let lastNumberMatched = false;
-          let luckyPassed = false;
+        const size = 5;
+        let winCount = 0;
+        let lastNumberMatched = false;
+        let luckyPassed = false;
 
-          function isCellChecked(row, col) {
-            const index = row * size + col;
-            const cell = cells[index];
-            return cell && (cell.classList.contains("checked") || cell.classList.contains("joker"));
-          }
 
-          function getCell(row, col) {
-            return cells[row * size + col];
-          }
-
-          const logoText = logoArea.textContent.trim();
-          const lastCalledNumber = parseInt(logoText.split(" ")[1], 10);
-          const patterns = JSON.parse(localStorage.getItem("Patterns") || '["h", "v", "d", "sc", "lc"]');
-
-          cells.forEach(cell => cell.classList.remove("line-win"));
-          const lines = [];
-
-          // Horizontal lines
-          if (patterns.includes("h")) {
-            for (let row = 0; row < size; row++) {
-              const line = [0, 1, 2, 3, 4].map(col => getCell(row, col));
-              if (line.every((_, i) => isCellChecked(row, i))) {
-                lines.push(line);
-              }
-            }
-          }
-
-          // Vertical lines
-          if (patterns.includes("v")) {
-            for (let col = 0; col < size; col++) {
-              const line = [0, 1, 2, 3, 4].map(row => getCell(row, col));
-              if (line.every((_, i) => isCellChecked(i, col))) {
-                lines.push(line);
-              }
-            }
-          }
-
-          // Diagonal lines (d)
-          if (patterns.includes("d")) {
-            const diag1 = [0, 1, 2, 3, 4].map(i => getCell(i, i));
-            if (diag1.every((_, i) => isCellChecked(i, i))) lines.push(diag1);
-
-            const diag2 = [0, 1, 2, 3, 4].map(i => getCell(i, size - 1 - i));
-            if (diag2.every((_, i) => isCellChecked(i, size - 1 - i))) lines.push(diag2);
-          }
-
-          // Small corners (sc) — cells (2,2), (2,4), (4,2), (4,4)
-          if (patterns.includes("sc")) {
-            const scCells = [
-              getCell(1, 1),
-              getCell(1, 3),
-              getCell(3, 1),
-              getCell(3, 3),
-            ];
-            if (scCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
-              lines.push(scCells);
-            }
-          }
-
-          // Large corners (lc) — cells (1,1), (1,4), (4,1), (4,4)
-          if (patterns.includes("lc")) {
-            const lcCells = [
-              getCell(0, 0),
-              getCell(0, 4),
-              getCell(4, 0),
-              getCell(0, 4),
-            ];
-            if (lcCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
-              lines.push(lcCells);
-            }
-          }
-
-          const uniqueMatched = new Set();
-          lines.forEach(line => {
-            let lineContainsLast = false;
-            line.forEach(cell => {
-              if (cell.textContent === String(lastCalledNumber)) lineContainsLast = true;
-              uniqueMatched.add(cell);
-            });
-
-            winCount++;
-            if (lineContainsLast) lastNumberMatched = true;
-            line.forEach(cell => cell.classList.add("line-win"));
-          });
-
-          let winner = false;
-
-          if (winCount >= lineChecker && lastNumberMatched) {
-            record_title.textContent = `🎉 ካርቴላ ቁጥር ${cartNumber} ከ ${winCount}/${lineChecker} ዝግ በመዝጋት አሸንፏል ✅`;
-            winner = false;
-            luckyPassed = true;
-          } else if (winCount >= lineChecker && !lastNumberMatched) {
-            record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} ከ ${winCount}/${lineChecker} ዝግ የዘጋበት እድሉ አልፏል`;
-          } else {
-            record_title.textContent = `❌ ካርቴላ ${cartNumber} አላሸነፈም (${winCount}/${lineChecker})`;
-          }
-
-          socket.emit("chake", {
-            cart: String(cartNumber),
-            winner: winner,
-            luckyPassed: luckyPassed
-          });
+        function isCellChecked(row, col) {
+          const index = row * size + col;
+          const cell = cells[index];
+          return cell && (cell.classList.contains("checked") || cell.classList.contains("joker"));
         }
+
+        function getCell(row, col) {
+          return cells[row * size + col];
+        }
+
+        const logoText = logoArea.textContent.trim();
+        const lastCalledNumber = parseInt(logoText.split(" ")[1], 10);
+        const patterns = JSON.parse(localStorage.getItem("Patterns") || '["h", "v", "d", "sc", "lc"]');
+
+        cells.forEach(cell => cell.classList.remove("line-win"));
+        const lines = [];
+
+        // Horizontal lines
+        if (patterns.includes("h")) {
+          for (let row = 0; row < size; row++) {
+            const line = [0, 1, 2, 3, 4].map(col => getCell(row, col));
+            if (line.every((_, i) => isCellChecked(row, i))) {
+              lines.push(line);
+            }
+          }
+        }
+
+        // Vertical lines
+        if (patterns.includes("v")) {
+          for (let col = 0; col < size; col++) {
+            const line = [0, 1, 2, 3, 4].map(row => getCell(row, col));
+            if (line.every((_, i) => isCellChecked(i, col))) {
+              lines.push(line);
+            }
+          }
+        }
+
+        // Diagonal lines (d)
+        if (patterns.includes("d")) {
+          const diag1 = [0, 1, 2, 3, 4].map(i => getCell(i, i));
+          if (diag1.every((_, i) => isCellChecked(i, i))) lines.push(diag1);
+
+          const diag2 = [0, 1, 2, 3, 4].map(i => getCell(i, size - 1 - i));
+          if (diag2.every((_, i) => isCellChecked(i, size - 1 - i))) lines.push(diag2);
+        }
+
+        // Small corners (sc)
+        if (patterns.includes("sc")) {
+          const scCells = [
+            getCell(1, 1),
+            getCell(1, 3),
+            getCell(3, 1),
+            getCell(3, 3),
+          ];
+          if (scCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
+            lines.push(scCells);
+          }
+        }
+
+        // Large corners (lc)
+        if (patterns.includes("lc")) {
+          const lcCells = [
+            getCell(0, 0),
+            getCell(0, 4),
+            getCell(4, 0),
+            getCell(4, 4),
+          ];
+          if (lcCells.every(cell => cell && (cell.classList.contains("checked") || cell.classList.contains("joker")))) {
+            lines.push(lcCells);
+          }
+        }
+
+        const uniqueMatched = new Set();
+        lines.forEach(line => {
+          let lineContainsLast = false;
+          line.forEach(cell => {
+            if (cell.textContent === String(lastCalledNumber)) lineContainsLast = true;
+            uniqueMatched.add(cell);
+          });
+
+          winCount++;
+          if (lineContainsLast) lastNumberMatched = true;
+          line.forEach(cell => cell.classList.add("line-win"));
+        });
+
+        let winner = false;
+
+        if (winCount >= lineChecker && lastNumberMatched) {
+          record_title.textContent = `🎉 ካርቴላ ቁጥር ${cartNumber} ከ ${winCount}/${lineChecker} ዝግ በመዝጋት አሸንፏል ✅`;
+          winner = true;
+          luckyPassed = true;
+          winnerSound.play(); // Play winner sound
+        } else if (winCount >= lineChecker && !lastNumberMatched) {
+          record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} ከ ${winCount}/${lineChecker} ዝግ የዘጋበት እድሉ አልፏል`;
+          loserSound.play(); // Play loser sound
+        } else {
+          record_title.textContent = `❌ ካርቴላ ${cartNumber} አላሸነፈም (${winCount}/${lineChecker})`;
+          loserSound.play(); // Play loser sound
+        }
+
+        socket.emit("chake", {
+          cart: String(cartNumber),
+          winner: winner,
+          luckyPassed: luckyPassed
+        });
+      }
+
+
+      // Declare variables to hold audio files
+      let loserSound, winnerSound, playSound, shuffleSound, pauseSound;
+
+      // Function to preload audio files
+      function preloadAudio() {
+        loserSound = new Audio('/buzz.mp3');
+        winnerSound = new Audio('/winner.mp3');
+        playSound = new Audio('/play.mp3');
+        shuffleSound = new Audio('/shuffle.mp3');
+        pauseSound = new Audio('/puase.mp3');
+
+        // Preload them
+        [buzzSound, winnerSound, playSound, shuffleSound, pauseSound].forEach(audio => audio.load());
+      }
+
+      // Call the preload function on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        preloadAudio();
+      });
+
 
     </script>
 

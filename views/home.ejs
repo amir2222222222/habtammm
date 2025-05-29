@@ -7,230 +7,233 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bingo Fantasy</title>
   <!-- Google Fonts & Font Awesome -->
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    body {
-      font-family: 'MedievalSharp', cursive;
-      height: 100vh;
-      width: 100%;
-      display: grid;
-      grid-template-rows: 1fr 10fr 2fr;
-      grid-template-columns: 100%;
-      gap: 3px;
-      overflow: hidden;
-      color: #fff;
-    }
+body {
+  font-family: 'MedievalSharp', cursive;
+  max-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr 10fr 2fr;
+  overflow: hidden;
+  color: #fff;
+}
 
-    .main_cont {
-       background: #111111;
-    }
-  
+.main_cont {
+  background: #111;
+}
 
-    .bingo_grid {
-      padding: 5px;
-      display: grid;
-      grid-template-rows: 0.5fr 10fr;
-      gap: 5px;
-      background: rgba(0, 0, 0, 0.844);
-      border-bottom:  solid 5px rgb(0, 0, 0);
-    }
+.bingo_grid {
+  padding: 5px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 5px;
+  background: rgb(0, 0, 0);
+}
 
-    .bingo_pik_card  {
-      display: flex;
-      align-items: end;
-     
-    }
+.bingo_pik_card {
+  display: flex;
+  align-items: flex-end;
+}
 
+.bingo_pik_card h1 {
+  font-size: 1rem;
+  padding-left: 20px;
+  color: #fff;
+}
 
-    .bingo_pik_card h1 {
-     
-      font-size: 1rem;
-      padding-left: 20px;
-      color: #ffffff;
-    }
+.bingo_numbers {
+  display: grid;
+  padding: 5px;
+  border-radius: 10px;
+  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(15, 1fr);
+  gap: 5px;
+}
 
-    .bingo_numbers {
-      display: grid;
-      padding: 5px;
-      border-radius: 10px;
-      grid-template-rows: repeat(10, 1fr);
-      grid-template-columns: repeat(15, 1fr);
-      gap: 5px;
-    }
+.cell {
+  background-color: #fff200;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border: 5px solid #cabc03;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s;
+  position: relative;
+}
 
-    .cell {
-      position: relative;
-      background-color: #fffb00;
-      color: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      border: solid 5px rgb(202, 188, 3);
-      border-radius: 5px;
-      cursor: pointer;
-      transition: transform 0.2s ease, background-color 0.3s;
-    }
+.cell.toggled {
+  background-color: #000 !important;
+  color: #fff;
+  border: 5px solid #fff;
+}
 
-    .cell.toggled {
-      background-color: #000000 !important;
-      color: #ffffff;
-         border:5px solid rgb(255, 255, 255);
-    }
+.cell.toggled::after {
+  content: attr(data-num);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background-color: rgb(255, 255, 255);
+  color: #ff0000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: pop 0.4s ease-out forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
 
-    .cell.toggled::after {
-      content: attr(data-num);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
-      font-size: 3rem;
-      font-weight: 500;
-      color: #ff0000;
-      border-radius: 50%;
-      animation: pop 0.3s forwards;
-      pointer-events: none;
-      z-index: 1000;
-    }
+@keyframes pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(8);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(10);
+    opacity: 0;
+  }
+}
 
-    @keyframes pop {
-      0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-      }
+.controllers {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: rgba(0, 66, 57, 0.874);
+  border-top: 2px solid black;
+  padding: 10px;
+}
 
-      25% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 1;
-      }
+.controll {
+  font-size: 1rem;
+  background-color: #1a4265;
+  border: 3px solid #fff;
+  color: #ecf0f1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  min-width: 100px;
+  height: 40px;
+}
 
-      50% {
-        transform: translate(-50%, -50%) scale(4);
-        opacity: 1;
-      }
+.controll:hover {
+  background-color: #7e8a00;
+  color: #000;
+  transform: scale(1.05);
+}
 
-      75% {
-        transform: translate(-50%, -50%) scale(8);
-        opacity: 0;
-      }
+.play {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background-color: #1a4265;
+  border: 3px solid #fff;
+  padding: 30px 50px;
+  border-radius: 10px;
+  color: #fff;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
-      100% {
-        transform: translate(-50%, -50%) scale(10);
-        opacity: 0;
-      }
-    }
+.play:hover {
+  background-color: #04498e;
+  color: #fff;
+}
 
-    .controllers {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      gap: 10px;
-      flex-wrap: wrap;
-      background: rgba(0, 66, 57, 0.874);
-      border-top: 2px solid black;
-    }
+.input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .controll {
-   
-      font-size: 1.1rem;
-      background-color:#1a4265;
-      border: none;
-      color: #ecf0f1;
-      padding: 10px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s;
-      border: solid 3px rgb(255, 255, 255);
-    }
+.input-label {
+  font-size: 1.1rem;
+  color: #ffffff;
+}
 
-    .controll:hover {
-      background-color: #7e8a00;
-      transform: scale(1.05);
-      color: #000;
-    }
+.input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
 
-    .play {
-   font-size: 25px;
-   line-height: 30px;
-      background-color:#1a4265;
-     padding: 30px 70px;
-     letter-spacing: 3px;
-     font-weight: 900;
-      height: 30px;
-    }
+.display-input {
+  background-color: #ecf0f1;
+  color: #000;
+  border: 3px solid #fff;
+  width: 130px;
+  height: 40px;
+  font-size: 1.5rem;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
-    .play:hover {
-      background-color: 04498e;
-      
-    }
+.icon-button {
+  background-color: #1a4265;
+  color: white;
+  border: 3px solid #fff;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+}
 
-    .input-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+.icon-button:hover {
+  background-color: #1e8449;
+  transform: scale(1.1);
+}
 
-    .input-label {
-      font-size: 1.2rem;
-    color: #000;
-    }
-
-    .input-group {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .display-input {
-      background-color: #ecf0f1;
-      color: #000000;
-      border: solid 3px rgb(255, 255, 255);
-   
-      width: 150px;
-      height: 35px;
-      font-size: 1rem;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .icon-button {
-      background-color:#1a4265;
-      color: white;
-   border: solid 3px rgb(255, 255, 255);
-      border-radius: 6px;
-      padding: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 50px;
-      height: 30px;
-    }
-
-    .icon-button:hover {
-      background-color: #1e8449;
-      transform: scale(1.1);
-    }
   </style>
+  
 </head>
 
 <body>
@@ -267,8 +270,8 @@
 
     <!-- Functional Buttons -->
     <button class="controll play" onclick="submitPlay()">Play</button>
-    <button class="controll" onclick="startConsoleInput()"><i class="fas fa-sync-alt"></i>Inter Cartelas</button>
-    <button class="controll" id="sync"><i class="fas fa-random"></i>Sync Previous</button>
+    <button class="controll" onclick="startConsoleInput()"><i class="fas fa-random"></i>Inter Cartelas</button>
+    <button class="controll" id="sync"></i><i class="fas fa-sync-alt"></i>Sync Previous</button>
   </div>
 
   <script>

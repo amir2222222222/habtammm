@@ -39,12 +39,10 @@ function bingoRoutes(io) {
       try {
         const openToken = req.cookies.OpenToken;
         if (!openToken) {
-          console.warn("⛔ OpenToken missing.");
           return res.redirect("/home"); // 👈 Redirect if missing
         }
         openTokenData = verifyToken(openToken);
       } catch (err) {
-        console.warn("⛔ Invalid or expired OpenToken:", err.message);
         return res.redirect("/home"); // 👈 Redirect if invalid
       }
 

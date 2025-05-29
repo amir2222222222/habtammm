@@ -38,7 +38,6 @@ router.get("/home", user, async (req, res) => {
 
     res.render("home");
   } catch (error) {
-    console.error("❌ Error in GET /home:", error);
     res.status(500).render("home", { error: "Internal server error." });
   }
 });
@@ -71,8 +70,18 @@ router.post("/home", user, async (req, res) => {
     const userBalance = parseFloat(foundUser.balance) || 0;
 
     const totalBet = betBirrNum * selectedcarts.length;
-    const winningAmount = totalBet - (totalBet * (userComission / 100));
-    const requiredBalance = totalBet - winningAmount;
+
+    let winningAmount;
+    let requiredBalance;
+    
+    if (selectedcarts.length === 1) {
+        winningAmount = totalBet;
+        requiredBalance = 0;
+    } else {
+        winningAmount = totalBet - (totalBet * (userComission / 100));
+        requiredBalance = totalBet - winningAmount;
+    }
+    
 
     if (userBalance < requiredBalance) {
       return res.status(400).json({ message: "Insufficient balance to place the bet." });
@@ -100,12 +109,11 @@ router.post("/home", user, async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 10000,
+      maxAge: 10000, // 10 seconds in milliseconds
     });
 
     res.redirect("/bingo_play");
   } catch (error) {
-    console.error("Error in /home POST:", error);
     res.status(500).json({ message: "Server error while submitting bet." });
   }
 });

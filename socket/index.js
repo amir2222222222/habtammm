@@ -102,13 +102,10 @@ function initSocketListeners(io) {
                     gameStarted = true;
                     gameIndex = newGame.index;
 
-                    console.log("✅ Balance deducted, game started, and game saved.", newGame);
-
                     const numbers = shuffleArrayCrypto([...Array(75).keys()].map(n => n + 1));
                     socket.emit("displayNumbers", numbers);
-                    console.log("🎲 Numbers sent to client. New game started.");
                 } else {
-                    console.log("⛔ The game has ended.");
+    
                 }
             });
 
@@ -142,19 +139,15 @@ function initSocketListeners(io) {
                 if (!user.$__.saving) {
                     await user.save();
                 } else {
-                    console.log("⏳ Waiting for previous save to finish...");
                     const wait = () => new Promise(res => setTimeout(res, 100));
                     while (user.$__.saving) {
                         await wait();
                     }
                     await user.save();
                 }
-
-                console.log(`📝 Cart ${cart} ${winner ? "marked as winner" : "checked"} and saved.`);
             });
 
         } catch (error) {
-            console.error("Database error:", error);
             socket.emit("errorMsg", "⚠️ An unexpected error occurred.");
         }
     });

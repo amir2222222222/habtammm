@@ -187,7 +187,7 @@
 
     <!-- Balance & Logout -->
     <div class="actions">
-      <div class="balance-text" onclick="toggleBalance()">Balance = *****</div>
+      <div class="balance-text" onclick="toggleBalance()">Balance</div>
       <form action="/logout" method="POST">
         <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i>Log Out</button>
       </form>
@@ -201,7 +201,7 @@
       const balanceText = document.querySelector(".balance-text");
 
       if (balanceVisible) {
-        balanceText.textContent = "Balance = *****";
+        balanceText.textContent = "Balance";
         balanceVisible = false;
         return;
       }
@@ -211,8 +211,8 @@
         if (!response.ok) throw new Error("Network issue");
         const data = await response.json();
         balanceText.textContent = data.balance
-          ? `Balance = Birr ${data.balance.toLocaleString()}`
-          : "Balance = *****";
+          ? ` Birr ${data.balance.toLocaleString()}`
+          : "Balance";
       } catch (error) {
         balanceText.textContent = "Balance = Error";
       }

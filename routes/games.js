@@ -49,7 +49,6 @@ router.get('/games', user, asyncHandler(async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error fetching user data:', err);
     return res.status(500).send('Internal server error');
   }
 }));

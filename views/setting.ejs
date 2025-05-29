@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
         }
-    
+
         /* Prevent Scrollbars */
         html,
         body {
@@ -20,7 +20,7 @@
             height: 100%;
             overflow: hidden;
         }
-    
+
         /* Body Styles */
         body {
             display: grid;
@@ -30,7 +30,7 @@
             font-family: 'Segoe UI', sans-serif;
             background-color: #f4f4f4;
         }
-    
+
         /* Header Styling (Example) */
         .header {
             background-color: #3498db;
@@ -40,7 +40,7 @@
             font-size: 1.5em;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-    
+
         /* Main Content Styles */
         .main-content {
             position: relative;
@@ -50,7 +50,7 @@
             height: 100%;
             padding: 20px;
         }
-    
+
         /* Container Styles */
         .container {
             display: flex;
@@ -62,18 +62,18 @@
             overflow: hidden;
             width: 100%;
         }
-    
+
         /* Column Styles */
         .column {
             flex: 1 1 50%;
             padding: 30px;
             border-right: 1px solid #ddd;
         }
-    
+
         .column:last-child {
             border-right: none;
         }
-    
+
         /* Heading Styles */
         h2 {
             text-align: center;
@@ -81,14 +81,14 @@
             font-weight: 600;
             color: #333;
         }
-    
+
         /* Paragraph Styles */
         p {
             line-height: 1.6;
             color: #555;
             margin-bottom: 15px;
         }
-    
+
         /* Button Styles */
         .button {
             display: inline-block;
@@ -100,18 +100,18 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
-    
+
         .button:hover {
             background-color: #2980b9;
         }
-    
+
         /* Label Styles */
         label {
             display: block;
             margin: 15px 0 5px;
             color: #000000;
         }
-    
+
         /* Input and Select Styles */
         input[type="number"],
         select {
@@ -120,7 +120,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
         }
-    
+
         /* Submit Button Styles */
         .submit-btn {
             background-color: #002da8;
@@ -133,11 +133,11 @@
             cursor: pointer;
             margin-top: 20px;
         }
-    
+
         .submit-btn:hover {
             background-color: #010246;
         }
-    
+
         /* Checkbox Group Styles */
         .checkbox-group label {
             display: flex;
@@ -145,20 +145,20 @@
             margin-bottom: 10px;
             cursor: pointer;
         }
-    
+
         .checkbox-group input {
             margin-right: 10px;
             transform: scale(1.2);
             cursor: pointer;
         }
-    
+
         /* Pattern Layout Styles */
         .pattern-layout {
             display: flex;
             align-items: flex-start;
             gap: 30px;
         }
-    
+
         /* Box Display Styles */
         .box-display {
             width: 200px;
@@ -171,14 +171,14 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-    
+
         .box-display img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
         }
-    
+
         /* Loading Overlay Styles */
         .loading-overlay {
             position: fixed;
@@ -194,30 +194,32 @@
             z-index: 1000;
             display: none;
         }
-    
+
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
-    
+
             .column {
                 flex: 1 1 100%;
                 border-right: none;
                 border-bottom: 1px solid #ddd;
             }
-    
+
             .column:last-child {
                 border-bottom: none;
             }
-    
+
             .pattern-layout {
                 flex-direction: column;
                 align-items: center;
             }
         }
-    
-        </style>
+        #progress-text{
+            color: #000;
+        }
+    </style>
 </head>
 
 <body>
@@ -278,18 +280,19 @@
 
         <div class="loading-overlay" id="loading-overlay">
             <div>
-                <p>Downloading voices... <span id="progress-text">0/75</span></p>
+                <p id="progress-text">Downloading voices... <span id="progress-text">0/75</span></p>
             </div>
         </div>
 
         <script>
-            const patternImages = {
-                h: 'https://via.placeholder.com/200?text=Horizontal',
-                v: 'https://via.placeholder.com/200?text=Vertical',
-                d: 'https://via.placeholder.com/200?text=Diagonal',
-                sc: 'https://via.placeholder.com/200?text=SC',
-                lc: 'https://via.placeholder.com/200?text=LC'
+           const patternImages = {
+                h: '/patters/any-horizontal.png',
+                v: '/patters/any-vertical.png',
+                d: '/patters/any-cross.png',
+                sc: '/patters/4-single-corner.png',
+                lc: '/patters/4-single-middle.png'
             };
+
 
             const patternImg = document.getElementById('pattern-img');
 
@@ -360,7 +363,7 @@
 
             // Download and save a single voice file
             function downloadVoiceFile(voice, index) {
-                return fetch(`/public/mp3/${voice}/${voice}${index}.mp3`)
+                return fetch(`/mp3/${voice}/${voice}${index}.mp3`)
                     .then(response => {
                         if (!response.ok) {
                             alert(`Warning: Voice file ${voice}${index}.mp3 not found for download.`);

@@ -104,12 +104,16 @@
   /* Table Header and Data Cell Styles */
   th,
   td {
-    border: 1px solid #e5e7eb;
-    padding: 8px;
+    padding: 3px;
     text-align: center;
     font-size: 14px;
     word-break: break-word;
     color: #555; /* Improved text color */
+  }
+  td {
+   border-bottom: 1px solid rgba(0, 0, 0, 0.503);
+   border-right: 1px solid rgba(0, 0, 0, 0.529);
+   border-left: 1px solid rgba(0, 0, 0, 0.505);
   }
 
   /* Table Header Styles */
@@ -239,19 +243,19 @@ button {
       <table>
         <thead>
           <tr>
-            <th>Index</th>
-            <th>Game Start</th>
-            <th>Game End</th>
-            <th>Bet (Birr)</th>
-            <th>Picked Cards</th>
-            <th>On Calls</th>
-            <th>Winner Cards</th>
-            <th>Lucky Passed Cards</th>
+            <th>#</th>
+            <th>ያለቀበት ሰአት</th>
+            <th>የጀመረበት ሰአት</th>
+            <th>መደብ</th>
+            <th>የተመዘገቡ ካርቴላዎች</th>
+            <th>የተፈተሹ <br> ካርቴላዎች</th>
+            <th>አሸናፊ <br> ካርቴላዎች</th>
+            <th>እድል ያለፋቸው <br> ካርተላዎች</th>
             <!-- New Column -->
-            <th>Dersh</th>
-            <th>Commission</th>
-            <th>By</th>
-            <th>Shop Name</th>
+            <th>ደራሽ</th>
+            <th>ተቆራጭ $</th>
+            <th>ያጫዋች</th>
+            <th>ያጫዋች <br> ሱቅ ስም</th>
           </tr>
         </thead>
       </table>

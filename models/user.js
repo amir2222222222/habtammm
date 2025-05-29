@@ -61,27 +61,23 @@ function getTodayDate() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Pre-save middleware to update balance based on credit
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("credit")) return next();
-
   const existingUser = await mongoose.models.User.findById(this._id);
 
   if (existingUser) {
     const newCredit = this.credit;
 
-    if (newCredit !== existingUser.credit) {
+    if (newCredit === 0) {
+      this.balance = 0;
+      this.lastCreditTime = getTodayDate();
+    } else {
       this.balance = (existingUser.balance || 0) + newCredit;
       this.lastCreditTime = getTodayDate();
-    }
-  } else {
-    if (this.credit > 0) {
-      this.lastCreditTime = getTodayDate();
-      this.balance = this.credit;
     }
   }
 
   next();
 });
+
 
 module.exports = mongoose.model("User", UserSchema);
