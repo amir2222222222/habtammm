@@ -36,11 +36,11 @@ router.get('/setting', user, asyncHandler(async (req, res) => {
     voiceOptions,
     checkedPatterns: patterns,
     patternLabels: {
-      h: 'H',
-      v: 'V',
-      d: 'D',
-      sc: 'SC',
-      lc: 'LC',
+      h: 'Horizontal',
+      v: 'Vertical',
+      d: 'Diagonal',
+      sc: 'Small Corner',
+      lc: 'Large Corner',
     },
   });
 }));
