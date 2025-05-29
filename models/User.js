@@ -17,6 +17,15 @@ const GameSchema = new mongoose.Schema({
   index: Number,
 }, { _id: false });
 
+// Helper: Today's date in YYYY-MM-DD
+function getTodayDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 // User Schema
 const UserSchema = new mongoose.Schema({
   name: { type: String, trim: true },
@@ -30,6 +39,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: { type: String, required: true },
   credit: { type: Number, default: 0 },
+  shouldAddCredit: { type: Boolean, default: false }, // <-- Explicit control
   balance: { type: Number, default: 0 },
   lastCreditTime: { type: String }, // or Date
   user_commission: {
@@ -52,32 +62,26 @@ const UserSchema = new mongoose.Schema({
   games: [GameSchema],
 });
 
-// Helper function to get today's date in YYYY-MM-DD format
-function getTodayDate() {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
+// Pre-save logic to apply credit only if flagged
 UserSchema.pre("save", async function (next) {
-  const existingUser = await mongoose.models.User.findById(this._id);
+  if (this.shouldAddCredit) {
+    const existingUser = await mongoose.models.User.findById(this._id);
 
-  if (existingUser) {
-    const newCredit = this.credit;
+    if (existingUser) {
+      const newCredit = this.credit;
 
-    if (newCredit === 0) {
-      this.balance = 0;
+      if (newCredit === 0) {
+        this.balance = 0;
+      } else {
+        this.balance = (existingUser.balance || 0) + newCredit;
+      }
+
       this.lastCreditTime = getTodayDate();
-    } else {
-      this.balance = (existingUser.balance || 0) + newCredit;
-      this.lastCreditTime = getTodayDate();
+      this.shouldAddCredit = false; // Reset after applying
     }
   }
 
   next();
 });
-
 
 module.exports = mongoose.model("User", UserSchema);
