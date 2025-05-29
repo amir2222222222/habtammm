@@ -328,42 +328,52 @@ body {
           });
 
 
-    function submitPlay() {
-      const zValue = parseInt(document.getElementById("zg").value);
-      const bet = parseInt(document.getElementById("birr").value);
+function submitPlay() {
+    const zValue = parseInt(document.getElementById("zg").value);
+    const bet = parseInt(document.getElementById("birr").value);
 
-      if (!zValue || !bet || selectedCells.size === 0) {
-        alert("Please select cards and fill bet details.");
+    if (!isValidInput(zValue, bet)) {
+        alert("Please select cards and fill bet details correctly.");
         return;
-      }
+    }
 
-      const payload = {
+    const payload = {
         selectedcarts: Array.from(selectedCells),
         linechaker: zValue,
         betbirr: bet,
-      };
+    };
 
-      localStorage.setItem('gamePayload', JSON.stringify(payload));
+    localStorage.setItem('gamePayload', JSON.stringify(payload));
 
-      fetch("/home", {
+    fetch("/home", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-       .then((res) => {
+    })
+    .then(handleResponse)
+    .catch(err => {
+        console.error("Error submitting play:", err);
+        showError("Server error while submitting bet.");
+    });
+}
+
+// Validate input values
+function isValidInput(zValue, bet) {
+    return Number.isInteger(zValue) && zValue > 0 &&
+           Number.isInteger(bet) && bet > 0 &&
+           selectedCells.size > 0;
+}
+
+// Handle server response
+function handleResponse(res) {
     if (res.redirected) {
         window.location.href = res.url;
     } else {
-        return res.json();
+        return res.json().then(data => {
+            console.log("Server response:", data);
+        });
     }
-})
-.then((data) => {
-    console.log("Server response:", data);
-})
-.catch((err) => {
-    console.error("Error submitting play:", err);
-    showError("Server error while submitting bet.");
-});
+}
 
 // Function to show error message
 function showError(message) {
