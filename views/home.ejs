@@ -350,25 +350,31 @@ body {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-        .then((res) => {
-          if (res.redirected) {
-            console.log({
-              selectedcarts: Array.from(selectedCells),
-              linechaker: zValue,
-              betbirr: bet,
-            })
-            window.location.href = res.url;
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log("Server response:", data);
-        })
-        .catch((err) => {
-          console.error("Error submitting play:", err);
-        });
+       .then((res) => {
+    if (res.redirected) {
+        window.location.href = res.url;
+    } else {
+        return res.json();
     }
+})
+.then((data) => {
+    console.log("Server response:", data);
+})
+.catch((err) => {
+    console.error("Error submitting play:", err);
+    showError("Server error while submitting bet.");
+});
+
+// Function to show error message
+function showError(message) {
+    const errorMessageElement = document.getElementById('error-message');
+    errorMessageElement.textContent = message;
+    errorMessageElement.style.display = 'block';
+
+    setTimeout(() => {
+        errorMessageElement.style.display = 'none';
+    }, 1000); // 1 second timeout
+}
 
     function adjustValue(field, change) {
       const input = document.getElementById(field);
