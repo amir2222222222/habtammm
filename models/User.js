@@ -64,18 +64,21 @@ const UserSchema = new mongoose.Schema({
 
 // Pre-save logic to apply credit only if flagged
 UserSchema.pre("save", async function (next) {
+  // Set shopname to name if shopname is not provided
+  if (!this.shopname) {
+    this.shopname = this.name;
+  }
+
+  // Existing credit addition logic
   if (this.shouldAddCredit) {
-    // Fetch existing user data to get the current balance
     const existingUser = await mongoose.models.User.findById(this._id);
 
     if (existingUser) {
       const newCredit = this.credit;
 
-      // If the new credit is greater than zero, add it to the existing balance
       if (newCredit > 0) {
         this.balance = (existingUser.balance || 0) + newCredit;
       } else {
-        // If the new credit is zero, retain the existing balance
         this.balance = existingUser.balance || 0;
       }
 
