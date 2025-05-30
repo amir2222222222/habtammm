@@ -1,22 +1,5 @@
 const mongoose = require("mongoose");
 
-// Game Schema
-const GameSchema = new mongoose.Schema({
-  gameStart: String,
-  gameEnd: String,
-  betBirr: Number,
-  pickedCards: [String],
-  onCalls: [String],
-  winnerCards: [String],
-  luckypassedCards: [String],
-  dersh: Number,
-  commission: Number,
-  by: String,
-  time: String,
-  shopname: String,
-  index: Number,
-}, { _id: false });
-
 // Helper: Today's date in YYYY-MM-DD
 function getTodayDate() {
   const today = new Date();
@@ -39,52 +22,45 @@ const UserSchema = new mongoose.Schema({
   },
   password: { type: String, required: true },
   credit: { type: Number, default: 0 },
-  shouldAddCredit: { type: Boolean, default: false }, // <-- Explicit control
+  shouldAddCredit: { type: Boolean, default: false },
   balance: { type: Number, default: 0 },
-  lastCreditTime: { type: String }, // or Date
-  user_commission: {
-    type: Number,
-    min: 1,
-    max: 100,
-    default: 20,
-  },
-  owner_commission: {
-    type: Number,
-    min: 1,
-    max: 100,
-    default: 15,
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'user', 'shop'],
-    default: 'user',
-  },
-  games: [GameSchema],
+  lastCreditTime: { type: String },
+  user_commission: { type: Number, min: 1, max: 100, default: 20 },
+  owner_commission: { type: Number, min: 1, max: 100, default: 15 },
+  role: { type: String, enum: ['admin', 'user', 'shop'], default: 'user' },
+  games: [ /* your GameSchema here */ ],
 });
 
-// Pre-save logic to apply credit only if flagged
+// Pre-save logic to apply credit only if flagged OR on new docs
 UserSchema.pre("save", async function (next) {
-  // Set shopname to name if shopname is not provided
+  // 1) default shopname
   if (!this.shopname) {
     this.shopname = this.name;
   }
 
-  // Existing credit addition logic
-  if (this.shouldAddCredit) {
-    const existingUser = await mongoose.models.User.findById(this._id);
+  const today = getTodayDate();
 
-    if (existingUser) {
-      const newCredit = this.credit;
-
-      if (newCredit > 0) {
-        this.balance = (existingUser.balance || 0) + newCredit;
-      } else {
-        this.balance = existingUser.balance || 0;
-      }
-
-      this.lastCreditTime = getTodayDate();
-      this.shouldAddCredit = false; // Reset after applying
+  // 2) NEW DOCUMENT: initialize balance = credit
+  if (this.isNew) {
+    if (this.credit > 0) {
+      this.balance = this.credit;
+      this.lastCreditTime = today;
     }
+    // ensure flag is reset
+    this.shouldAddCredit = false;
+
+  // 3) EXISTING DOC + explicit flag
+  } else if (this.shouldAddCredit) {
+    const existing = await mongoose.models.User.findById(this._id);
+    if (existing) {
+      if (this.credit > 0) {
+        this.balance = (existing.balance || 0) + this.credit;
+      } else {
+        this.balance = existing.balance || 0;
+      }
+      this.lastCreditTime = today;
+    }
+    this.shouldAddCredit = false;
   }
 
   next();
