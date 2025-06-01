@@ -1,65 +1,70 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/user');
 const { user } = require('../middleware/authmiddleware');
-const asyncHandler = require('../utils/asyncHandler');
 
-// GET /profile - show profile page with optional success messages
-router.get('/profile', user, asyncHandler(async (req, res) => {
-  const foundUser = await User.findById(req.user.id).lean();
-  if (!foundUser) return res.redirect('/login');
+// GET /profile
+router.get('/profile', user, async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user.id);
+    if (!currentUser) return res.redirect('/login');
 
-  const { name, username, shopname } = foundUser;
+    const successName = req.query.successName ? 'Name updated successfully!' : null;
+    const successCommission = req.query.successCommission ? 'User commission updated successfully!' : null;
 
-  res.render('profile', {
-    name,
-    username,
-    shopname,
-    successName: req.query.nameUpdated === 'true' ? 'Name updated successfully!' : null,
-    successUsername: req.query.usernameUpdated === 'true' ? 'Username updated successfully! Please log in again.' : null,
-  });
-}));
-
-// POST /profile/name - update name
-router.post('/profile/name', user, asyncHandler(async (req, res) => {
-  const name = (req.body.name || '').trim();
-
-  if (!name) {
-    return res.status(400).json({ error: 'Name cannot be empty.' });
+    res.render('profile', {
+      name: currentUser.name,
+      shopname: currentUser.shopname || currentUser.name,
+      userCommission: currentUser.user_commission || 0,
+      successName,
+      successCommission,
+    });
+  } catch (err) {
+    console.error('Error loading profile:', err);
+    res.status(500).send('Internal server error loading profile.');
   }
+});
 
-  const foundUser = await User.findById(req.user.id);
-  if (!foundUser) return res.redirect('/login');
+// POST /name - Update Name
+router.post('/name', user, async (req, res) => {
+  try {
+    const { name } = req.body;
 
-  foundUser.name = name;
-  await foundUser.save();
+    if (!name || name.trim().length === 0) {
+      return res.status(400).send('Name is required.');
+    }
 
-  res.redirect('/profile?nameUpdated=true');
-}));
+    const trimmedName = name.trim();
 
-// POST /profile/username - update username (unique check)
-router.post('/profile/username', user, asyncHandler(async (req, res) => {
-  const username = (req.body.username || '').trim();
+    await User.findByIdAndUpdate(req.user.id, {
+      name: trimmedName,
+      shopname: trimmedName, // name also becomes shopname
+    });
 
-  if (!username) {
-    return res.status(400).json({ error: 'Username cannot be empty.' });
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Error updating name:', err);
+    res.status(500).send('Internal server error updating name.');
   }
+});
 
-  // Check if username already exists and is not current user
-  const existingUser = await User.findOne({ username });
-  if (existingUser && existingUser._id.toString() !== req.user.id) {
-    return res.status(400).json({ error: 'Username already taken.' });
+
+// POST /commission - Update User Commission
+router.post('/commission', user, async (req, res) => {
+  try {
+    let { userCommission } = req.body;
+    userCommission = parseInt(userCommission);
+
+    if (isNaN(userCommission) || userCommission < 1 || userCommission > 100) {
+      return res.status(400).send('Commission must be a number between 1 and 100.');
+    }
+
+    await User.findByIdAndUpdate(req.user.id, { user_commission: userCommission });
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Error updating commission:', err);
+    res.status(500).send('Internal server error updating commission.');
   }
-
-  const foundUser = await User.findById(req.user.id);
-  if (!foundUser) return res.redirect('/login');
-
-  foundUser.username = username;
-  await foundUser.save();
-
-  // Redirect to logout to force re-login after username change
-  res.redirect('/logout?usernameUpdated=true');
-}));
+});
 
 module.exports = router;
- 
