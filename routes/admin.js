@@ -1,50 +1,87 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/user');
 const asyncHandler = require('../utils/asyncHandler');
 
-// === GET: Admin Panel ===
+function getTodayDate() {
+    const t = new Date();
+    return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
+
+// GET: Admin panel
 router.get('/admin', (req, res) => {
     res.render("admin");
 });
 
-// === POST: Admin Signup ===
+// POST: Register admin
 router.post('/signup/admin', asyncHandler(async (req, res) => {
     const { name, password } = req.body;
 
+    const existing = await User.findOne({ username: name });
+    if (existing) return res.status(409).json({ error: 'Username already exists' });
+
     const user = new User({
         name,
-        username: name, // Use name as username
+        username: name,
         password,
         role: 'admin'
     });
 
     await user.save();
-
-    res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        role: user.role,
-        name: user.name
-    });
+    res.status(201).json({ _id: user._id, username: user.username, role: user.role, name: user.name });
 }));
 
+// POST: Register user
 // === POST: User Signup ===
 router.post('/signup/user', asyncHandler(async (req, res) => {
-    const { name, password, credit, user_commission, owner_commission, shopname } = req.body;
-
-    const user = new User({
+    const { name, password, credit, user_commission, owner_commission } = req.body;
+    console.log({
         name,
-        shopname,
-        username: name, // Use name as username
         password,
         credit,
         user_commission,
-        owner_commission,
+        owner_commission
+    });
+    
+
+    if (!name || typeof name !== 'string') {
+        return res.status(400).json({ error: 'Name is required and must be a string' });
+    }
+
+    if (!password || password.length < 4) {
+        return res.status(400).json({ error: 'Password is required and must be at least 4 characters' });
+    }
+
+    const parsedCredit = parseFloat(credit?.trim());
+    const parsedUserCommission = parseFloat(user_commission?.trim());
+    const parsedOwnerCommission = parseFloat(owner_commission?.trim());
+
+    if (isNaN(parsedCredit) || parsedCredit < 0) {
+        return res.status(400).json({ error: 'Credit must be a number >= 0' });
+    }
+
+    if (isNaN(parsedUserCommission) || parsedUserCommission < 1 || parsedUserCommission > 100) {
+        return res.status(400).json({ error: 'User commission must be between 1 and 100' });
+    }
+
+    if (isNaN(parsedOwnerCommission) || parsedOwnerCommission < 1 || parsedOwnerCommission > 100) {
+        return res.status(400).json({ error: 'Owner commission must be between 1 and 100' });
+    }
+
+    const user = new User({
+        name,
+        username: name,
+        shopname: name,
+        password,
+        credit: parsedCredit,
+        balance: parsedCredit,
+        lastCreditTime: getTodayDate(),
+        user_commission: parsedUserCommission,
+        owner_commission: parsedOwnerCommission,
         role: 'user'
     });
 
-    await user.save(); // Pre-save middleware handles balance and timestamp
+    await user.save();
 
     res.status(201).json({
         _id: user._id,
@@ -56,61 +93,60 @@ router.post('/signup/user', asyncHandler(async (req, res) => {
     });
 }));
 
-// === GET: List all users ===
+
+
+// GET: List users
 router.get('/users_list', asyncHandler(async (req, res) => {
     const users = await User.find({}, 'name username role lastCreditTime');
     res.json(users);
 }));
 
-// === PUT: Update user fields ===
+// PUT: Update user fields
 router.put('/users/:id', asyncHandler(async (req, res) => {
     const updates = req.body;
-    delete updates.password; // Ensure password can't be updated here
+    delete updates.password;
 
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Apply only valid fields
-    ['credit', 'user_commission', 'owner_commission'].forEach(field => {
-        if (updates[field] !== undefined) {
-            user[field] = updates[field];
+    if (updates.credit !== undefined) {
+        const addCredit = parseFloat(updates.credit);
+        if (!isNaN(addCredit) && addCredit > 0) {
+            user.credit += addCredit;
+            user.balance += addCredit;
+            user.lastCreditTime = getTodayDate();
         }
-    });
+    }
+
+    if (updates.user_commission !== undefined) {
+        const uc = parseFloat(updates.user_commission);
+        if (isNaN(uc) || uc < 1 || uc > 100)
+            return res.status(400).json({ error: 'User commission must be 1-100' });
+        user.user_commission = uc;
+    }
+
+    if (updates.owner_commission !== undefined) {
+        const oc = parseFloat(updates.owner_commission);
+        if (isNaN(oc) || oc < 1 || oc > 100)
+            return res.status(400).json({ error: 'Owner commission must be 1-100' });
+        user.owner_commission = oc;
+    }
 
     await user.save();
-
-    res.json({
-        _id: user._id,
-        username: user.username,
-        credit: user.credit,
-        balance: user.balance,
-        lastCreditTime: user.lastCreditTime,
-        role: user.role,
-        user_commission: user.user_commission,
-        owner_commission: user.owner_commission,
-        shopname: user.shopname,
-        name: user.name
-    });
+    res.json(user);
 }));
 
-// === DELETE: Remove user ===
+// DELETE: Delete user
 router.delete('/users/:id', asyncHandler(async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
-
     res.json({ message: 'User deleted successfully' });
 }));
 
-// === POST: Logout (clear cookies) ===
-const cookiesToClear = [
-    'token', '_birr_bet', 'selected', 'zValue', 'winnmoney',
-    'totalbet', 'Voice', 'speed', 'zg'
-];
-
+// POST: Logout
 router.post('/logout', (req, res) => {
-    cookiesToClear.forEach(cookie => {
-        res.clearCookie(cookie, { path: '/' });
-    });
+    ['token', '_birr_bet', 'selected', 'zValue', 'winnmoney', 'totalbet', 'Voice', 'speed', 'zg']
+        .forEach(c => res.clearCookie(c, { path: '/' }));
     res.redirect('/login');
 });
 
