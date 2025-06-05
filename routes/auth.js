@@ -41,15 +41,14 @@ router.post("/login", asyncHandler(async (req, res) => {
       return res.redirect("/login?error=1");
     }
 
-    const token = generateToken({ id: user._id, role: user.role });
-   res.cookie("token", token, {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
+const token = generateToken({ id: user._id, role: user.role });
+res.cookie("token", token, {
+  httpOnly: true, // Prevents JavaScript access
+  sameSite: "lax", // Adjust if cross-origin requests are needed
+  secure: process.env.NODE_ENV === "production", // Use HTTPS in production
   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-  path: "/"
+  path: "/" // Accessible throughout the site
 });
-
 
     return res.redirect(user.role === "admin" ? "/admin" : "/home");
 
