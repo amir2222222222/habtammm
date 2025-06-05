@@ -1490,7 +1490,7 @@
         if (winCount >= lineChecker && lastNumberMatched) {
           record_title.textContent = `🎉 ካርቴላ ቁጥር ${cartNumber} አሸንፏል ✅`;
           winner = true;
-          luckyPassed = true;
+          luckyPassed = false;
           winnerSound.play(); // Play winner sound
         } else if (winCount >= lineChecker && !lastNumberMatched) {
           record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} እድሉ አልፏል`;
