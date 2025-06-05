@@ -24,39 +24,39 @@ router.get("/home", user, async (req, res) => {
       return res.status(404).render("home", { error: "User not found." });
     }
 
-const defaultVoiceType = "Recommended_Black_Male_Voice";
-const defaultGameSpeed = "2";
-const defaultPatterns = ["h", "v", "d", "sc", "lc"];
+    const defaultVoiceType = "Recommended_Black_Male_Voice";
+    const defaultGameSpeed = "2";
+    const defaultPatterns = ["h", "v", "d", "sc", "lc"];
 
-const voicetype = getCookieOrDefault(req, "VoiceType", defaultVoiceType);
-const gamespeed = getCookieOrDefault(req, "GameSpeed", defaultGameSpeed);
-const patterns = getCookieOrDefault(req, "Patterns", defaultPatterns, true);
+    const voicetype = getCookieOrDefault(req, "VoiceType", defaultVoiceType);
+    const gamespeed = getCookieOrDefault(req, "GameSpeed", defaultGameSpeed);
+    const patterns = getCookieOrDefault(req, "Patterns", defaultPatterns, true);
 
-const oneYear = 1000 * 60 * 60 * 24 * 365;
+    const oneYear = 1000 * 60 * 60 * 24 * 365;
 
-res.cookie("VoiceType", voicetype, {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-  path: "/",
-  maxAge: oneYear
-});
+    res.cookie("VoiceType", voicetype, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: oneYear
+    });
 
-res.cookie("GameSpeed", gamespeed, {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-  path: "/",
-  maxAge: oneYear
-});
+    res.cookie("GameSpeed", gamespeed, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: oneYear
+    });
 
-res.cookie("Patterns", JSON.stringify(patterns), {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-  path: "/",
-  maxAge: oneYear
-});
+    res.cookie("Patterns", JSON.stringify(patterns), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: oneYear
+    });
 
     res.render("home");
   } catch (error) {
@@ -95,52 +95,47 @@ router.post("/home", user, async (req, res) => {
 
     let winningAmount;
     let requiredBalance;
-    
-   if (selectedcarts.length <= 3) {
-    winningAmount = totalBet;
-    requiredBalance = 0;
-}
 
+    if (selectedcarts.length <= 3) {
+      winningAmount = totalBet;
+      requiredBalance = 0;
     } else {
-        winningAmount = totalBet - (totalBet * (userComission / 100));
-        requiredBalance = totalBet - winningAmount;
+      winningAmount = totalBet - (totalBet * (userComission / 100));
+      requiredBalance = totalBet - winningAmount;
     }
-    
 
     if (userBalance < requiredBalance) {
       return res.status(400).json({ message: "Insufficient balance to place the bet." });
     }
 
-    // Unsigned cookies
- const cookieOptions = {
-  httpOnly: true,       // Prevents JavaScript access
-  secure: process.env.NODE_ENV === "production", // Ensures HTTPS in production
-  sameSite: "lax",      // Mitigates CSRF, still works with most cross-site POSTs
-  path: "/"             // Makes cookie available on all routes
-};
-
-res.cookie("BetBirr", betBirrNum, cookieOptions);
-res.cookie("SelectedCarts", JSON.stringify(selectedcarts), cookieOptions);
-res.cookie("LineChaker", lineChakerNum, cookieOptions);
-res.cookie("WinningAmount", winningAmount.toFixed(2), cookieOptions);
-res.cookie("TotalBet", totalBet.toFixed(2), cookieOptions);
-
-
-    // JWT-signed token only for RequiredBalance
-app.use((req, res, next) => {
-  const token = req.cookies.RequiredBalanceToken;
-  if (token) {
-    res.cookie("RequiredBalanceToken", token, {
+    // Cookie options
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours from now
       path: "/"
-    });
-  }
-  next();
-});
+    };
 
+    res.cookie("BetBirr", betBirrNum, cookieOptions);
+    res.cookie("SelectedCarts", JSON.stringify(selectedcarts), cookieOptions);
+    res.cookie("LineChaker", lineChakerNum, cookieOptions);
+    res.cookie("WinningAmount", winningAmount.toFixed(2), cookieOptions);
+    res.cookie("TotalBet", totalBet.toFixed(2), cookieOptions);
+
+    // JWT-signed token for RequiredBalance
+    app.use((req, res, next) => {
+      const token = req.cookies.RequiredBalanceToken;
+      if (token) {
+        res.cookie("RequiredBalanceToken", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 1000 * 60 * 60 * 24, // 24 hours
+          path: "/"
+        });
+      }
+      next();
+    });
 
     // JWT for game opening access
     const openToken = generateToken({ open: "true" });
@@ -148,7 +143,7 @@ app.use((req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 10000, // 10 seconds in milliseconds
+      maxAge: 10000 // 10 seconds
     });
 
     res.redirect("/bingo_play");
