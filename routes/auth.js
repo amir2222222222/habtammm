@@ -4,18 +4,19 @@ const User = require("../models/User");
 const { generateToken,verifyToken } = require("../utils/jwt");
 const asyncHandler = require("../utils/asyncHandler");
 const validator = require("validator"); // npm i validator
+const jwt = require('jsonwebtoken'); // Add this line to import the library
 
 
-// Show login page (if not already authenticated)
+
 router.get(["/", "/login", "/signin"], (req, res) => {
   const token = req.cookies.token;
 
   if (token) {
     try {
-      const decoded = jwt.verifyToken(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use jwt.verify instead of jwt.verifyToken
       return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
     } catch (err) {
-      console.error("JWT Verification Error:", err); // Log the error to the console
+      console.error("JWT Verification Error:", err); // Log the error
       res.clearCookie("token"); // Clear the cookie for invalid tokens
     }
   }
