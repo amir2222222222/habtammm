@@ -44,7 +44,6 @@ function initSocketListeners(io) {
             userId = verifiedToken.id;
             requiredBalance = parseFloat(verifiedBalanceToken.requiredBalance) || 0;
         } catch (error) {
-            console.error("Token verification error:", error);
             return socket.emit("errorMsg", "🚫 Invalid or expired token.");
         }
 
@@ -66,7 +65,6 @@ function initSocketListeners(io) {
                 if (gameStarted) {
                     const numbers = shuffleArrayCrypto([...Array(75).keys()].map(n => n + 1));
                     socket.emit("displayNumbers", numbers);
-                    console.log("🎲 Numbers sent to client. Game already started.");
                     return;
                 }
 
@@ -97,9 +95,6 @@ function initSocketListeners(io) {
                     user.games.push(newGame);
                     await user.save();
 
-                    console.log(`💾 Game saved:`, newGame); // ✅ Added log
-                    console.log(`💰 Balance after deduction: ${user.balance}`); // ✅ Added log
-
                     balanceDeducted = true;
                     gameStarted = true;
                     gameIndex = newGame.index;
@@ -125,7 +120,6 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
             return socket.emit("errorMsg", "⚠️ Invalid cart format.");
         }
 
-        console.log("🔍 Current gameIndex:", gameIndex);
         if (gameIndex === null || !user.games || !user.games[gameIndex]) {
             return socket.emit("errorMsg", "⚠️ Game not initialized.");
         }
@@ -154,7 +148,6 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
         await user.save();
         socket.emit("successMsg", "✅ Game data updated.");
     } catch (err) {
-        console.error("❌ Error in 'chake':", err.stack || err);
         socket.emit("errorMsg", "⚠️ Failed to update game data.");
     } finally {
         isSaving = false;  // Release the lock
@@ -162,7 +155,6 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
 });
 
         } catch (error) {
-            console.error("General socket error:", error);
             socket.emit("errorMsg", "⚠️ An unexpected error occurred.");
         }
     });
