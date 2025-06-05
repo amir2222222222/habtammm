@@ -87,7 +87,7 @@ function initSocketListeners(io) {
                         dersh: winningAmount,
                         commission: requiredBalance || 0,
                         by: user.username,
-                        shopname: user.shopname || user.username,
+                        shopname: user.shopname || user.name,
                         time,
                         index: user.games.length,
                     };
