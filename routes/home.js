@@ -122,19 +122,13 @@ router.post("/home", user, async (req, res) => {
     res.cookie("WinningAmount", winningAmount.toFixed(2), cookieOptions);
     res.cookie("TotalBet", totalBet.toFixed(2), cookieOptions);
 
-    // JWT-signed token for RequiredBalance
-    app.use((req, res, next) => {
-      const token = req.cookies.RequiredBalanceToken;
-      if (token) {
-        res.cookie("RequiredBalanceToken", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 1000 * 60 * 60 * 24, // 24 hours
-          path: "/"
-        });
-      }
-      next();
+     // JWT-signed token only for RequiredBalance
+    const requiredBalanceToken = generateToken({ requiredBalance: requiredBalance.toFixed(2) });
+    res.cookie("RequiredBalanceToken", requiredBalanceToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 // 24 hours
     });
 
     // JWT for game opening access
