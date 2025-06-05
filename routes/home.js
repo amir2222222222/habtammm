@@ -24,17 +24,39 @@ router.get("/home", user, async (req, res) => {
       return res.status(404).render("home", { error: "User not found." });
     }
 
-    const defaultVoiceType = "Recommended_Black_Male_Voice";
-    const defaultGameSpeed = "2";
-    const defaultPatterns = ["h", "v", "d", "sc", "lc"];
+const defaultVoiceType = "Recommended_Black_Male_Voice";
+const defaultGameSpeed = "2";
+const defaultPatterns = ["h", "v", "d", "sc", "lc"];
 
-    const voicetype = getCookieOrDefault(req, "VoiceType", defaultVoiceType);
-    const gamespeed = getCookieOrDefault(req, "GameSpeed", defaultGameSpeed);
-    const patterns = getCookieOrDefault(req, "Patterns", defaultPatterns, true);
+const voicetype = getCookieOrDefault(req, "VoiceType", defaultVoiceType);
+const gamespeed = getCookieOrDefault(req, "GameSpeed", defaultGameSpeed);
+const patterns = getCookieOrDefault(req, "Patterns", defaultPatterns, true);
 
-    res.cookie("VoiceType", voicetype, { sameSite: "lax" });
-    res.cookie("GameSpeed", gamespeed, { sameSite: "lax" });
-    res.cookie("Patterns", JSON.stringify(patterns), { sameSite: "lax" });
+const oneYear = 1000 * 60 * 60 * 24 * 365;
+
+res.cookie("VoiceType", voicetype, {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: oneYear
+});
+
+res.cookie("GameSpeed", gamespeed, {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: oneYear
+});
+
+res.cookie("Patterns", JSON.stringify(patterns), {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: oneYear
+});
 
     res.render("home");
   } catch (error) {
@@ -74,9 +96,11 @@ router.post("/home", user, async (req, res) => {
     let winningAmount;
     let requiredBalance;
     
-    if (selectedcarts.length === 1) {
-        winningAmount = totalBet;
-        requiredBalance = 0;
+   if (selectedcarts.length <= 3) {
+    winningAmount = totalBet;
+    requiredBalance = 0;
+}
+
     } else {
         winningAmount = totalBet - (totalBet * (userComission / 100));
         requiredBalance = totalBet - winningAmount;
@@ -88,20 +112,35 @@ router.post("/home", user, async (req, res) => {
     }
 
     // Unsigned cookies
-    res.cookie("BetBirr", betBirrNum, { sameSite: "lax" });
-    res.cookie("SelectedCarts", JSON.stringify(selectedcarts), { sameSite: "lax" });
-    res.cookie("LineChaker", lineChakerNum, { sameSite: "lax" });
-    res.cookie("WinningAmount", winningAmount.toFixed(2), { sameSite: "lax" });
-    res.cookie("TotalBet", totalBet.toFixed(2), { sameSite: "lax" });
+ const cookieOptions = {
+  httpOnly: true,       // Prevents JavaScript access
+  secure: process.env.NODE_ENV === "production", // Ensures HTTPS in production
+  sameSite: "lax",      // Mitigates CSRF, still works with most cross-site POSTs
+  path: "/"             // Makes cookie available on all routes
+};
+
+res.cookie("BetBirr", betBirrNum, cookieOptions);
+res.cookie("SelectedCarts", JSON.stringify(selectedcarts), cookieOptions);
+res.cookie("LineChaker", lineChakerNum, cookieOptions);
+res.cookie("WinningAmount", winningAmount.toFixed(2), cookieOptions);
+res.cookie("TotalBet", totalBet.toFixed(2), cookieOptions);
+
 
     // JWT-signed token only for RequiredBalance
-    const requiredBalanceToken = generateToken({ requiredBalance: requiredBalance.toFixed(2) });
-    res.cookie("RequiredBalanceToken", requiredBalanceToken, {
+app.use((req, res, next) => {
+  const token = req.cookies.RequiredBalanceToken;
+  if (token) {
+    res.cookie("RequiredBalanceToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 10 * 60 * 1000,
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours from now
+      path: "/"
     });
+  }
+  next();
+});
+
 
     // JWT for game opening access
     const openToken = generateToken({ open: "true" });
