@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const cookie = require("cookie");
-const User = require("../models/User");
+const User = require('../models/user');
 const { verifyToken } = require("../utils/jwt");
 
 function shuffleArrayCrypto(arr) {
@@ -30,7 +30,6 @@ function getCustomTimeString() {
 function initSocketListeners(io) {
     io.on("connection", async (socket) => {
         const rawCookies = cookie.parse(socket.handshake.headers.cookie || "");
-
         const token = rawCookies.token;
         const balanceToken = rawCookies.RequiredBalanceToken;
 
@@ -42,7 +41,6 @@ function initSocketListeners(io) {
         try {
             const verifiedToken = verifyToken(token);
             const verifiedBalanceToken = verifyToken(balanceToken);
-
             userId = verifiedToken.id;
             requiredBalance = parseFloat(verifiedBalanceToken.requiredBalance) || 0;
         } catch (error) {
@@ -79,10 +77,11 @@ function initSocketListeners(io) {
 
                     const time = getCustomTimeString();
                     user.balance -= requiredBalance;
+
                     const newGame = {
                         gameStart: time,
-                        gameEnd: time, // Will be updated later
-                        betBirr: betBirr,
+                        gameEnd: time,
+                        betBirr,
                         pickedCards: selectedCarts,
                         onCalls: [],
                         winnerCards: [],
@@ -96,58 +95,79 @@ function initSocketListeners(io) {
                     };
 
                     user.games.push(newGame);
+                    await user.save();
 
-                    await user.save(); // ✅ Only one save here
+                    console.log(`💾 Game saved:`, newGame); // ✅ Added log
+                    console.log(`💰 Balance after deduction: ${user.balance}`); // ✅ Added log
+
                     balanceDeducted = true;
                     gameStarted = true;
                     gameIndex = newGame.index;
 
                     const numbers = shuffleArrayCrypto([...Array(75).keys()].map(n => n + 1));
                     socket.emit("displayNumbers", numbers);
-                } else {
-    
                 }
             });
 
-            socket.on("chake", async ({ cart, winner, luckyPassed }) => {
-                if (!cart || typeof cart !== "string") {
-                    return socket.emit("errorMsg", "⚠️ Invalid cart format.");
-                }
+            let isSaving = false;  // Lock to prevent parallel saves
 
-                if (gameIndex === null || !user.games[gameIndex]) {
-                    return socket.emit("errorMsg", "⚠️ Game not initialized.");
-                }
+socket.on("chake", async ({ cart, winner, luckyPassed }) => {
+    try {
+        // Early exit if a save is already in progress
+        if (isSaving) {
+            return socket.emit("errorMsg", "⚠️ Save in progress. Please wait.");
+        }
 
-                const currentGame = user.games[gameIndex];
+        isSaving = true;  // Set the lock
 
-                if (!currentGame.onCalls) currentGame.onCalls = [];
-                if (!currentGame.onCalls.includes(cart)) {
-                    currentGame.onCalls.push(cart);
-                }
+        console.log("📥 chake received:", { cart, winner, luckyPassed });
+        
+        if (!cart || typeof cart !== "string") {
+            return socket.emit("errorMsg", "⚠️ Invalid cart format.");
+        }
 
-                if (winner && !currentGame.winnerCards.includes(cart)) {
-                    currentGame.winnerCards.push(cart);
-                }
+        console.log("🔍 Current gameIndex:", gameIndex);
+        if (gameIndex === null || !user.games || !user.games[gameIndex]) {
+            return socket.emit("errorMsg", "⚠️ Game not initialized.");
+        }
 
-                if (luckyPassed && !currentGame.luckypassedCards.includes(cart)) {
-                    currentGame.luckypassedCards.push(cart);
-                }
+        const currentGame = user.games[gameIndex];
+        currentGame.onCalls = currentGame.onCalls || [];
+        
+        // Update onCalls
+        if (!currentGame.onCalls.includes(cart)) {
+            currentGame.onCalls.push(cart);
+        }
 
-                currentGame.gameEnd = getCustomTimeString();
+        // Update winnerCards
+        if (winner && !currentGame.winnerCards.includes(cart)) {
+            currentGame.winnerCards.push(cart);
+        }
 
-                // ✅ Safe saving to prevent ParallelSaveError
-                if (!user.$__.saving) {
-                    await user.save();
-                } else {
-                    const wait = () => new Promise(res => setTimeout(res, 100));
-                    while (user.$__.saving) {
-                        await wait();
-                    }
-                    await user.save();
-                }
-            });
+        // Update luckypassedCards
+        if (luckyPassed && !currentGame.luckypassedCards.includes(cart)) {
+            currentGame.luckypassedCards.push(cart);
+        }
+
+        // Update the gameEnd time
+        currentGame.gameEnd = getCustomTimeString();
+
+        console.log("🧾 Game to be saved:", JSON.stringify(currentGame, null, 2));
+        user.markModified("games");
+        await user.save();
+
+        console.log("✅ Game updated:", currentGame);
+        socket.emit("successMsg", "✅ Game data updated.");
+    } catch (err) {
+        console.error("❌ Error in 'chake':", err.stack || err);
+        socket.emit("errorMsg", "⚠️ Failed to update game data.");
+    } finally {
+        isSaving = false;  // Release the lock
+    }
+});
 
         } catch (error) {
+            console.error("General socket error:", error);
             socket.emit("errorMsg", "⚠️ An unexpected error occurred.");
         }
     });
