@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const { generateToken } = require("../utils/jwt");
+const { generateToken,verifyToken } = require("../utils/jwt");
 const asyncHandler = require("../utils/asyncHandler");
 const validator = require("validator"); // npm i validator
 
@@ -13,7 +13,7 @@ router.get(["/", "/login", "/signin"], (req, res) => {
 
   if (token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verifyToken(token, process.env.JWT_SECRET);
       return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
     } catch (err) {
       res.clearCookie("token"); // bad token, clear and continue
