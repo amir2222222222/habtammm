@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const cookie = require("cookie");
-const User = require('../models/user');
+const User = require('../models/User');
 const { verifyToken } = require("../utils/jwt");
 
 function shuffleArrayCrypto(arr) {
