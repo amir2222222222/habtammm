@@ -706,10 +706,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-    
       border-radius: 10px;
-   
-     
+      background-color: #ffffff71;
+      border: 2px solid #eee;
     }
     .info-display .winner,
 .info-display .betbirr {
@@ -1495,9 +1494,13 @@
           winnerSound.play(); // Play winner sound
         } else if (winCount >= lineChecker && !lastNumberMatched) {
           record_title.textContent = `❌ ካርቴላ ቁጥር ${cartNumber} እድሉ አልፏል`;
+          winner = false;
+          luckyPassed = true
           loserSound.play(); // Play loser sound
         } else {
           record_title.textContent = `❌ ካርቴላ ${cartNumber} አላሸነፈም `;
+          winner = false;
+          luckyPassed = false
           loserSound.play(); // Play loser sound
         }
 
