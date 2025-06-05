@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const asyncHandler = require('../utils/asyncHandler');
+const { admin } = require("../middleware/authmiddleware");
 
 function getTodayDate() {
     const t = new Date();
@@ -9,12 +10,23 @@ function getTodayDate() {
 }
 
 // GET: Admin panel
-router.get('/admin', (req, res) => {
-    res.render("admin");
+router.get('/admin',(req, res) => {
+  const token = req.cookies.token;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
+    } catch (err) {
+      res.clearCookie("token"); // bad token, clear and continue
+    }
+  }
+
+  res.render("login");
 });
 
 // POST: Register admin
-router.post('/signup/admin', asyncHandler(async (req, res) => {
+router.post('/signup/admin', admin, asyncHandler(async (req, res) => {
     const { name, password } = req.body;
 
     const existing = await User.findOne({ username: name });
@@ -33,7 +45,7 @@ router.post('/signup/admin', asyncHandler(async (req, res) => {
 
 // POST: Register user
 // === POST: User Signup ===
-router.post('/signup/user', asyncHandler(async (req, res) => {
+router.post('/signup/user', admin, asyncHandler(async (req, res) => {
     const { name, password, credit, user_commission, owner_commission } = req.body;
     console.log({
         name,
@@ -96,13 +108,13 @@ router.post('/signup/user', asyncHandler(async (req, res) => {
 
 
 // GET: List users
-router.get('/users_list', asyncHandler(async (req, res) => {
+router.get('/users_list', admin, asyncHandler(async (req, res) => {
     const users = await User.find({}, 'name username role lastCreditTime');
     res.json(users);
 }));
 
 // PUT: Update user fields
-router.put('/users/:id', asyncHandler(async (req, res) => {
+router.put('/users/:id', admin, asyncHandler(async (req, res) => {
     const updates = req.body;
     delete updates.password;
 
@@ -137,7 +149,7 @@ router.put('/users/:id', asyncHandler(async (req, res) => {
 }));
 
 // DELETE: Delete user
-router.delete('/users/:id', asyncHandler(async (req, res) => {
+router.delete('/users/:id', admin, asyncHandler(async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ message: 'User deleted successfully' });
@@ -145,7 +157,7 @@ router.delete('/users/:id', asyncHandler(async (req, res) => {
 
 // POST: Logout
 router.post('/logout', (req, res) => {
-    ['token', '_birr_bet', 'selected', 'zValue', 'winnmoney', 'totalbet', 'Voice', 'speed', 'zg']
+    ['token']
         .forEach(c => res.clearCookie(c, { path: '/' }));
     res.redirect('/login');
 });
