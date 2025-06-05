@@ -11,23 +11,19 @@
       margin: 0;
       padding: 0;
     }
-  
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f4f7fa;
       height: 100vh;
       width: 100%;
       display: grid;
-      grid-template-rows: 1fr 1fr 10fr ;
+      grid-template-rows: 1fr 1fr 10fr;
       grid-template-columns: 100%;
-      /* Changed to auto and 1fr */
-  
       width: 100%;
-    gap: 2px;
-    
-      /* Prevent body scroll */
+      gap: 2px;
     }
-  
+
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -35,30 +31,26 @@
       padding: 10px;
       background-color: #fff;
       border-bottom: 1px solid #ddd;
-  
-      /* Changed to sticky */
-     
-      /* Adjust top value */
       z-index: 100;
     }
-  
+
     .top-bar h2 {
       font-size: 22px;
       color: #111827;
     }
-  
+
     .fetch-form {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-  
+
     .fetch-form input[type="date"] {
       padding: 6px 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-  
+
     .fetch-form button {
       padding: 6px 14px;
       background: #00b09c;
@@ -67,151 +59,83 @@
       border-radius: 4px;
       cursor: pointer;
     }
-  
+
     .fetch-form button:hover {
       background: #059669;
     }
-  
+
     .summary {
       text-align: right;
       font-size: 14px;
     }
-  
+
     .summary div {
       margin-bottom: 4px;
     }
-  
+
     .main-content {
-  
       overflow-y: auto;
-      /* Enable scroll on main content */
-      /* flex-grow: 1;  Not needed with grid */
     }
-  
+
     .table-wrapper {
       max-height: 100%;
       overflow: auto;
     }
-  
+
     /* Table Styles */
     table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    table-layout: fixed;
-  }
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      table-layout: fixed;
+    }
 
-  /* Table Header and Data Cell Styles */
-  th,
-  td {
-    padding: 3px;
-    text-align: center;
-    font-size: 14px;
-    word-break: break-word;
-    color: #555; /* Improved text color */
-  }
-  td {
-   border-bottom: 1px solid rgba(0, 0, 0, 0.503);
-   border-right: 1px solid rgba(0, 0, 0, 0.529);
-   border-left: 1px solid rgba(0, 0, 0, 0.505);
-  }
+    /* Table Header and Data Cell Styles */
+    th,
+    td {
+      padding: 5px;
+      /* Reduced padding for compactness */
+      text-align: center;
+      font-size: 14px;
+      word-break: break-word;
+      color: #555;
+      font-weight: bold;
+      /* Make data slightly bold */
+    }
 
-  /* Table Header Styles */
-  th {
-    background-color: #0042ad;
-    color: white;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
+    td {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.503);
+      border-right: 1px solid rgba(0, 0, 0, 0.529);
+      border-left: 1px solid rgba(0, 0, 0, 0.505);
+    }
 
-  /* Table Row Hover Effect */
-  tbody tr:hover {
-    background-color: #f0f0f5;
-  }
+    /* Table Header Styles */
+    th {
+      background-color: #0042ad;
+      color: white;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 5px;
+      /* Reduced padding for headers */
+    }
 
-  /* Numbered List Styles */
-  ol {
-    list-style-type: none; /* Remove default numbering */
-    padding: 0;
-  }
+    /* Table Row Hover Effect */
+    tbody tr:hover {
+      background-color: #f0f0f5;
+    }
 
-  ol li {
-    counter-increment: my-awesome-counter;
-    margin-bottom: 0.5em;
-  }
-
-  ol li::before {
-    content: counter(my-awesome-counter) ". ";
-    font-weight: bold;
-    display: inline-block;
-    width: 1.5em;
-    text-align: right;
-  }
-  /* Style for the date input */
-/* Style for the fetch form */
-.fetch-form {
-  display: flex; /* Use flexbox for alignment */
-  align-items: center; /* Center items vertically */
-  gap: 10px; /* Space between input and button */
-}
-
-/* Style for the date input */
-input[type="date"] {
-  flex: 1; /* Allow input to grow */
-  padding: 10px; /* Padding for input */
-  border: 2px solid #007BFF; /* Blue border */
-  border-radius: 5px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-input[type="date"]:focus {
-  border-color: #0056b3; /* Darker blue on focus */
-  outline: none; /* Remove default outline */
-}
-
-/* Style for the submit button */
-button {
-  padding: 10px 15px; /* Padding for button */
-  border: none; /* Remove border */
-  border-radius: 5px;
-  background-color: #007BFF; /* Blue background */
-  color: white; /* White text */
-  font-size: 16px;
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-/* Ensure button height matches input */
-button {
-  height: 100%; /* Match height of the input */
-  display: flex; /* Flexbox for centering text */
-  align-items: center; /* Center text vertically */
-}
-    /* tbody {
-          max-height: 400px;
-          overflow-y: auto;
-          display: block;
-        } */
-    /* Removed these lines */
-  
     @media (max-width: 768px) {
       .top-bar {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
       }
-  
+
       .summary {
         text-align: left;
       }
     }
-  
-    </style>
+  </style>
 </head>
 
 <body>
@@ -231,11 +155,10 @@ button {
           totalCommission += parseFloat(game.commission || 0);
           totalDersh += parseFloat(game.dersh || 0);
           });
-          }
-          %>
+          } %>
           <div class="summary">
             <div>Total Commission: <span style="color:#059669; font-weight:bold;">$<%= totalCommission.toFixed(2) %>
-              </span></div>
+                  </span></div>
             <div>Total Dersh: <span style="color:#ef4444; font-weight:bold;">$<%= totalDersh.toFixed(2) %></span></div>
           </div>
       </div>
@@ -251,7 +174,6 @@ button {
             <th>የተፈተሹ <br> ካርቴላዎች</th>
             <th>አሸናፊ <br> ካርቴላዎች</th>
             <th>እድል ያለፋቸው <br> ካርተላዎች</th>
-            <!-- New Column -->
             <th>ደራሽ</th>
             <th>ተቆራጭ $</th>
             <th>ያጫዋች</th>
@@ -285,18 +207,16 @@ button {
                       <%= game.betBirr %>
                     </td>
                     <td>
-                      <%= (game.pickedCards || []).join(', ') %>
-            </td>
-            <td><%= (game.onCalls || []).join(' , ') %></td>
-            <td><%= (game.winnerCards || []).join(' , ') %></td>
-            <td><%= (game.luckypassedCards || []).join(' , ') %></td>
-            <!-- Lucky Passed Cards -->
-            <td>$<%= parseFloat(game.dersh || 0).toFixed(2) %></td>
-            <td>$<%= parseFloat(game.commission || 0).toFixed(2) %></td>
-            <td><%= game.by %></td>
-            <td><%= game.shopname %></td>
-          </tr>
-          <% }) %>
+                      <%= (game.pickedCards || []).join(', ') %></td>
+                <td><%= (game.onCalls || []).join(' , ') %></td>
+                <td><%= (game.winnerCards || []).join(' , ') %></td>
+                <td><%= (game.luckypassedCards || []).join(' , ') %></td>
+                <td>$<%= parseFloat(game.dersh || 0).toFixed(2) %></td>
+                <td>$<%= parseFloat(game.commission || 0).toFixed(2) %></td>
+                <td><%= game.by %></td>
+                <td><%= game.shopname %></td>
+              </tr>
+            <% }) %>
           <% } %>
         </tbody>
       </table>
