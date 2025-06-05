@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const asyncHandler = require('../utils/asyncHandler');
+const { generateToken,verifyToken } = require("../utils/jwt");
 const { admin } = require("../middleware/authmiddleware");
 
 function getTodayDate() {
@@ -15,7 +16,7 @@ router.get('/admin',(req, res) => {
 
   if (token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = verifyToken(token);
       return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
     } catch (err) {
       res.clearCookie("token"); // bad token, clear and continue
