@@ -62,6 +62,7 @@ router.post("/login", asyncHandler(async (req, res) => {
 router.get("/logout", (req, res) => {
   // List of cookie names to be cleared
   const cookieNames = [
+    "token",
     "OpenToken",
     "WinningAmount",
     "BetBirr",
