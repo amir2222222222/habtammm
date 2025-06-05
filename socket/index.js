@@ -120,8 +120,7 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
 
         isSaving = true;  // Set the lock
 
-        console.log("📥 chake received:", { cart, winner, luckyPassed });
-        
+
         if (!cart || typeof cart !== "string") {
             return socket.emit("errorMsg", "⚠️ Invalid cart format.");
         }
@@ -151,12 +150,8 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
 
         // Update the gameEnd time
         currentGame.gameEnd = getCustomTimeString();
-
-        console.log("🧾 Game to be saved:", JSON.stringify(currentGame, null, 2));
         user.markModified("games");
         await user.save();
-
-        console.log("✅ Game updated:", currentGame);
         socket.emit("successMsg", "✅ Game data updated.");
     } catch (err) {
         console.error("❌ Error in 'chake':", err.stack || err);
