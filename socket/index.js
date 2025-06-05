@@ -115,7 +115,6 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
 
         isSaving = true;  // Set the lock
 
-
         if (!cart || typeof cart !== "string") {
             return socket.emit("errorMsg", "⚠️ Invalid cart format.");
         }
@@ -126,18 +125,18 @@ socket.on("chake", async ({ cart, winner, luckyPassed }) => {
 
         const currentGame = user.games[gameIndex];
         currentGame.onCalls = currentGame.onCalls || [];
-        
+
         // Update onCalls
         if (!currentGame.onCalls.includes(cart)) {
             currentGame.onCalls.push(cart);
         }
 
-        // Update winnerCards
+        // Update winnerCards only if winner is true
         if (winner && !currentGame.winnerCards.includes(cart)) {
             currentGame.winnerCards.push(cart);
         }
 
-        // Update luckypassedCards
+        // Update luckypassedCards only if luckyPassed is true
         if (luckyPassed && !currentGame.luckypassedCards.includes(cart)) {
             currentGame.luckypassedCards.push(cart);
         }
