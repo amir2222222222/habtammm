@@ -11,19 +11,9 @@ function getTodayDate() {
 }
 
 // GET: Admin panel
-router.get('/admin',(req, res) => {
-  const token = req.cookies.token;
-
-  if (token) {
-    try {
-      const decoded = verifyToken(token);
-      return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
-    } catch (err) {
-      res.clearCookie("token"); // bad token, clear and continue
-    }
-  }
-
-  res.render("login");
+router.get('/admin', admin, (req, res) => {
+  res.render("admin");
+    
 });
 
 // POST: Register admin
