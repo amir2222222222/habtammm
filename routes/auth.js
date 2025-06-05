@@ -42,12 +42,14 @@ router.post("/login", asyncHandler(async (req, res) => {
     }
 
     const token = generateToken({ id: user._id, role: user.role });
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24,
-      path: "/"
-    });
+   res.cookie("token", token, {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  path: "/"
+});
+
 
     return res.redirect(user.role === "admin" ? "/admin" : "/home");
 
@@ -66,9 +68,6 @@ router.get("/logout", (req, res) => {
     "LineChaker",
     "TotalBet",
     "RequiredBalanceToken",
-    "VoiceType",
-    "GameSpeed",
-    "Patterns",
     "SelectedCarts"
   ];
 
