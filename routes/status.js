@@ -15,7 +15,7 @@ router.get('/status', user, asyncHandler(async (req, res) => {
   const formattedUser = {
     username: foundUser.username,
     name: foundUser.name || foundUser.username,
-    shopname: foundUser.shopname || foundUser.username,
+    shopname: foundUser.shopname || foundUser.name,
     shop: foundUser.username,
     credit,
     lastCreditTime: foundUser.lastCreditTime,
