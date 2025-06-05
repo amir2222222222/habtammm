@@ -7,7 +7,6 @@ const validator = require("validator"); // npm i validator
 
 
 // Show login page (if not already authenticated)
-// ✅ No middleware here
 router.get(["/", "/login", "/signin"], (req, res) => {
   const token = req.cookies.token;
 
@@ -16,13 +15,13 @@ router.get(["/", "/login", "/signin"], (req, res) => {
       const decoded = jwt.verifyToken(token, process.env.JWT_SECRET);
       return res.redirect(decoded.role === "admin" ? "/admin" : "/home");
     } catch (err) {
-      res.clearCookie("token"); // bad token, clear and continue
+      console.error("JWT Verification Error:", err); // Log the error to the console
+      res.clearCookie("token"); // Clear the cookie for invalid tokens
     }
   }
 
   res.render("login");
 });
-
 
 router.post("/login", asyncHandler(async (req, res) => {
   try {
