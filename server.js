@@ -27,9 +27,6 @@ app.use(cors({
   methods: ["GET", "POST"]
 }));
 
-
-
-
 const server = http.createServer(app);
 
 // Enable CORS for Socket.IO
@@ -42,7 +39,6 @@ const io = new Server(server, {
 
 // Connect to DB
 connectDB();
-app.set("view cache", false); // Disable EJS view caching during development
 // Middleware
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.urlencoded({ extended: true }));
@@ -100,5 +96,5 @@ initSocketListeners(io);  // Use the separated Socket.IO logic
 // Start server
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
-  console.log(`Serv at http://localhost:${PORT}`);
+  console.log(` fuck yea u make me complete `);
 });
