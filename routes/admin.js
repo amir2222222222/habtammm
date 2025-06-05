@@ -115,7 +115,7 @@ router.put('/users/:id', admin, asyncHandler(async (req, res) => {
     if (updates.credit !== undefined) {
         const addCredit = parseFloat(updates.credit);
         if (!isNaN(addCredit) && addCredit > 0) {
-            user.credit += addCredit;
+            user.credit == addCredit;
             user.balance += addCredit;
             user.lastCreditTime = getTodayDate();
         }
